@@ -1,0 +1,6 @@
+# Ignore This
+node_modules
+package-lock.json
+input
+output
+.DS_Store

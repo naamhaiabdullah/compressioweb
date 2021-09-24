@@ -43,18 +43,20 @@ app.post('/compress', (req, res) => {
     const start = async () => {
 
         try {
-
             // Creating Unique In/Out Subdirectory
             await new Promise((resolve, reject) => {
-                fs.mkdir(inChildFolder, { recursive: false }, (err) => {
-                    if (err) { reject(sendError(res, 'Failed to Create Input Directory')); }
+                fs.mkdir(inChildFolder, { recursive: true }, (err) => {
+                    if (err) { 
+                        reject(sendError(res, 'Failed to Create Input Dir'));
+                    }
                     else { resolve() }
                 })
             });
-
             await new Promise((resolve, reject) => {
-                fs.mkdir(outChildFolder, { recursive: false }, (err) => {
-                    if (err) { reject(sendError(res, 'Failed to Create Input Directory')); }
+                fs.mkdir(outChildFolder, { recursive: true }, (err) => {
+                    if (err) {
+                        reject(sendError(res, 'Failed to Create Input Dir'));
+                    }
                     else { resolve() }
                 })
             });
@@ -70,14 +72,38 @@ app.post('/compress', (req, res) => {
                     // Some Form Error
                     if (err) { reject(sendError(res, `Error Parsing Form with ${err}`)) }
 
-                    // Checking Form Data
-                    if (!files.inImgs) { reject(sendError(res, 'No Images Posted')) }
-                    if (typeof fields.stripMeta === 'undefined' || fields.stripMeta.trim() === 'true') { fields.stripMeta = 'true' }
-                    else { fields.stripMeta = 'false' }
-                    if (typeof fields.isLossy === 'undefined' || fields.isLossy.trim() === 'true') { fields.isLossy = 'true' }
-                    else { fields.isLossy = 'false' }
-                    if (typeof fields.imgQuality === 'undefined' || isNaN(parseInt(fields.imgQuality.trim()))) { fields.imgQuality = 'default' }
-                    else {
+                    // if Image?
+                    if (!files.inImgs) {
+                        reject(sendError(res, 'No Images Posted'))
+                    }
+
+                    // stripMeta?
+                    if (
+                        typeof fields.stripMeta === 'undefined' ||
+                        fields.stripMeta.trim() === 'true'
+                    ) {
+                        fields.stripMeta = 'true'
+                    } else {
+                        fields.stripMeta = 'false'
+                    }
+
+                    // isLossy?
+                    if (
+                        typeof fields.isLossy === 'undefined' ||
+                        fields.isLossy.trim() === 'true'
+                    ) {
+                        fields.isLossy = 'true'
+                    } else {
+                        fields.isLossy = 'false'
+                    }
+
+                    // imgQuality?
+                    if (
+                        typeof fields.imgQuality === 'undefined' ||
+                        isNaN(parseInt(fields.imgQuality.trim()))
+                    ) {
+                        fields.imgQuality = 'default'
+                    } else {
                         let imgQualityTemp = parseInt(fields.imgQuality.trim());
                         fields.imgQuality = 'default';
 
@@ -156,10 +182,9 @@ app.post('/compress', (req, res) => {
                             await compressGIF(compVal);
                             compValAll[i] = compVal;
                         } else {
-                            reject(sendError(res, 'Image Not JPG, PNG, GIF or SVG!'));
+                            reject(sendError(res, 'File Not Supported!'));
                         }
                     }
-
                     // Resolving Promise on Loop End
                     resolve();
                 });
@@ -169,7 +194,7 @@ app.post('/compress', (req, res) => {
             return sendResponse(compValAll, totalImgs, res);
         }
         catch (err) {
-            return sendError(res, `Caught ${err} Inside First Async Func Start!`);
+            return sendError(res, `Caught ${err} In Start!`);
         }
     };
     start();
@@ -186,7 +211,9 @@ const sendResponse = async (compValAll, totalImgs, res) => {
 
             let inStats = await new Promise((resolve, reject) => {
                 fs.stat(compValAll[i].inImgPath, (err, stats) => {
-                    if (err) { reject(sendError(res, 'Failed to Read Input Image Stats')); }
+                    if (err) {
+                        reject(sendError(res, 'Failed to Read sizeBefore'));
+                    }
                     else { resolve(stats) }
                 })
             });
@@ -195,7 +222,9 @@ const sendResponse = async (compValAll, totalImgs, res) => {
 
             let outStats = await new Promise((resolve, reject) => {
                 fs.stat(compValAll[i].outImgPath, (err, stats) => {
-                    if (err) { reject(sendError(res, 'Failed to Read Output Image Stats')); }
+                    if (err) {
+                        reject(sendError(res, 'Failed to Read sizeAfter'));
+                    }
                     else { resolve(stats) }
                 })
             });
@@ -216,7 +245,7 @@ const sendResponse = async (compValAll, totalImgs, res) => {
         res.json({ responseData });
     }
     catch (err) {
-        sendError(res, `Caught ${err} Inside Async Func sendResponse!`);
+        sendError(res, `Caught ${err} In sendResponse!`);
     }
     finally {
         return res.end();
@@ -227,125 +256,405 @@ const sendResponse = async (compValAll, totalImgs, res) => {
 const sendError = (res, error) => {
     try {
         res.json({ Error: error });
-    } catch(err) {
-        res.json({ Error: `Caught ${err} Inside Func sendError!` });
+    } catch (err) {
+        res.json({ Error: `Caught ${err} In sendError!` });
     } finally {
         return res.end();
     }
-    
+
 }
 
 // Compresses JPEG image with JPEGOptim
 const compressJPG = async (compVal) => {
     try {
-        if (compVal.isLossy === 'false' && compVal.stripMeta === 'false') {
-            const compImg = spawn('jpegoptim', [compVal.inImgPath, '--dest=' + compVal.outChildFolder]);
-            return new Promise(resolve => { compImg.stdout.on('end', () => { resolve() }) });
-        } else if (compVal.isLossy === 'false' && compVal.stripMeta === 'true') {
-            const compImg = spawn('jpegoptim', ['--strip-all', compVal.inImgPath, '--dest=' + compVal.outChildFolder]);
-            return new Promise(resolve => { compImg.stdout.on('end', () => { resolve() }) });
-        } else if (compVal.isLossy === 'true' && compVal.stripMeta === 'false' && compVal.imgQuality === 'default') {
-            const compImg = spawn('jpegoptim', ['-m85', compVal.inImgPath, '--dest=' + compVal.outChildFolder]);
-            return new Promise(resolve => { compImg.stdout.on('end', () => { resolve() }) });
-        } else if (compVal.isLossy === 'true' && compVal.stripMeta === 'false' && compVal.imgQuality !== 'default') {
-            const compImg = spawn('jpegoptim', ['-m' + compVal.imgQuality, compVal.inImgPath, '--dest=' + compVal.outChildFolder]);
-            return new Promise(resolve => { compImg.stdout.on('end', () => { resolve() }) });
-        } else if (compVal.isLossy === 'true' && compVal.stripMeta === 'true' && compVal.imgQuality === 'default') {
-            const compImg = spawn('jpegoptim', ['-m85', '--strip-all', compVal.inImgPath, '--dest=' + compVal.outChildFolder]);
-            return new Promise(resolve => { compImg.stdout.on('end', () => { resolve() }) });
-        } else if (compVal.isLossy === 'true' && compVal.stripMeta === 'true' && compVal.imgQuality !== 'default') {
-            const compImg = spawn('jpegoptim', ['-m' + compVal.imgQuality, '--strip-all', compVal.inImgPath, '--dest=' + compVal.outChildFolder]);
-            return new Promise(resolve => { compImg.stdout.on('end', () => { resolve() }) });
+        if (
+            compVal.isLossy === 'false'
+            && compVal.stripMeta === 'false'
+        ) {
+            const compImg = spawn('jpegoptim', [
+                compVal.inImgPath,
+                '--dest=' + compVal.outChildFolder
+            ]);
+            return new Promise(resolve => {
+                compImg.stdout.on('end', () => { resolve() })
+            });
+        } else if (
+            compVal.isLossy === 'false' &&
+            compVal.stripMeta === 'true'
+        ) {
+            const compImg = spawn('jpegoptim', [
+                '--strip-all',
+                compVal.inImgPath,
+                '--dest=' + compVal.outChildFolder
+            ]);
+            return new Promise(resolve => {
+                compImg.stdout.on('end', () => { resolve() })
+            });
+        } else if (
+            compVal.isLossy === 'true' &&
+            compVal.stripMeta === 'false' &&
+            compVal.imgQuality === 'default'
+        ) {
+            const compImg = spawn('jpegoptim', [
+                '-m85',
+                compVal.inImgPath,
+                '--dest=' + compVal.outChildFolder
+            ]);
+            return new Promise(resolve => {
+                compImg.stdout.on('end', () => { resolve() })
+            });
+        } else if (
+            compVal.isLossy === 'true' &&
+            compVal.stripMeta === 'false' &&
+            compVal.imgQuality !== 'default'
+        ) {
+            const compImg = spawn('jpegoptim', [
+                '-m' + compVal.imgQuality,
+                compVal.inImgPath,
+                '--dest=' + compVal.outChildFolder
+            ]);
+            return new Promise(resolve => {
+                compImg.stdout.on('end', () => { resolve() })
+            });
+        } else if (
+            compVal.isLossy === 'true' &&
+            compVal.stripMeta === 'true' &&
+            compVal.imgQuality === 'default'
+        ) {
+            const compImg = spawn('jpegoptim', [
+                '-m85',
+                '--strip-all',
+                compVal.inImgPath,
+                '--dest=' + compVal.outChildFolder
+            ]);
+            return new Promise(resolve => {
+                compImg.stdout.on('end', () => { resolve() })
+            });
+        } else if (
+            compVal.isLossy === 'true' &&
+            compVal.stripMeta === 'true' &&
+            compVal.imgQuality !== 'default'
+        ) {
+            const compImg = spawn('jpegoptim', [
+                '-m' + compVal.imgQuality,
+                '--strip-all',
+                compVal.inImgPath,
+                '--dest=' + compVal.outChildFolder
+            ]);
+            return new Promise(resolve => {
+                compImg.stdout.on('end', () => { resolve() })
+            });
         } else { return false }
     }
     catch (err) {
-        sendError(compVal.res, `Caught ${err} Inside Async Func compressJPG!`);
+        sendError(compVal.res, `Caught ${err} In compressJPG!`);
     }
 };
-
 
 // Compresses PNG image with PNGQuant and OptiPNG
 const compressPNG = async (compVal) => {
     try {
-        if (compVal.isLossy === 'false' && compVal.stripMeta === 'false') {
-            const compImg = spawn('optipng', ['-o2', compVal.inImgPath, '-out', compVal.outImgPath]);
-            return new Promise(resolve => { compImg.stdout.on('end', () => { resolve() }) });
-        } else if (compVal.isLossy === 'false' && compVal.stripMeta === 'true') {
-            const compImg = spawn('optipng', ['-o2', compVal.inImgPath, '-strip all', '-out', compVal.outImgPath]);
-            return new Promise(resolve => { compImg.stdout.on('end', () => { resolve() }) });
-        } else if (compVal.isLossy === 'true' && compVal.stripMeta === 'false' && compVal.imgQuality === 'default') {
-            const compImg = spawn('pngquant', ['--skip-if-larger', '--speed=1', '--quality=1-85', compVal.inImgPath, '--out', compVal.outImgPath]);
-            return new Promise(resolve => { compImg.stdout.on('end', () => { resolve() }) });
-        } else if (compVal.isLossy === 'true' && compVal.stripMeta === 'false' && compVal.imgQuality !== 'default') {
-            const compImg = spawn('pngquant', ['--skip-if-larger', '--speed=1', '--quality=1-' + compVal.imgQuality, compVal.inImgPath, '--out', compVal.outImgPath]);
-            return new Promise(resolve => { compImg.stdout.on('end', () => { resolve() }) });
-        } else if (compVal.isLossy === 'true' && compVal.stripMeta === 'true' && compVal.imgQuality === 'default') {
-            const compImg = spawn('pngquant', ['--skip-if-larger', '--speed=1', '--strip', '--quality=1-85', compVal.inImgPath, '--out', compVal.outImgPath]);
-            return new Promise(resolve => { compImg.stdout.on('end', () => { resolve() }) });
-        } else if (compVal.isLossy === 'true' && compVal.stripMeta === 'true' && compVal.imgQuality !== 'default') {
-            const compImg = spawn('pngquant', ['--skip-if-larger', '--speed=1', '--strip', '--quality=1-' + compVal.imgQuality, compVal.inImgPath, '--out', compVal.outImgPath]);
-            return new Promise(resolve => { compImg.stdout.on('end', () => { resolve() }) });
+        if (
+            compVal.isLossy === 'false' &&
+            compVal.stripMeta === 'false'
+        ) {
+            const compImg = spawn('optipng', [
+                '-o2', compVal.inImgPath,
+                '-out', compVal.outImgPath
+            ]);
+            return new Promise(resolve => {
+                compImg.stdout.on('end', () => { resolve() })
+            });
+        } else if (
+            compVal.isLossy === 'false' &&
+            compVal.stripMeta === 'true'
+        ) {
+            const compImg = spawn('optipng', [
+                '-o2', compVal.inImgPath,
+                '-strip all',
+                '-out',
+                compVal.outImgPath
+            ]);
+            return new Promise(resolve => {
+                compImg.stdout.on('end', () => { resolve() })
+            });
+        } else if (
+            compVal.isLossy === 'true' &&
+            compVal.stripMeta === 'false' &&
+            compVal.imgQuality === 'default'
+        ) {
+            const compImg = spawn('pngquant', [
+                '--skip-if-larger',
+                '--speed=1',
+                '--quality=1-85',
+                compVal.inImgPath,
+                '--out',
+                compVal.outImgPath
+            ]);
+            return new Promise(resolve => {
+                compImg.stdout.on('end', () => { resolve() })
+            });
+        } else if (
+            compVal.isLossy === 'true' &&
+            compVal.stripMeta === 'false' &&
+            compVal.imgQuality !== 'default'
+        ) {
+            const compImg = spawn('pngquant', [
+                '--skip-if-larger',
+                '--speed=1',
+                '--quality=1-' + compVal.imgQuality,
+                compVal.inImgPath, '--out',
+                compVal.outImgPath
+            ]);
+            return new Promise(resolve => {
+                compImg.stdout.on('end', () => { resolve() })
+            });
+        } else if (
+            compVal.isLossy === 'true' &&
+            compVal.stripMeta === 'true' &&
+            compVal.imgQuality === 'default'
+        ) {
+            const compImg = spawn('pngquant', [
+                '--skip-if-larger',
+                '--speed=1',
+                '--strip',
+                '--quality=1-85',
+                compVal.inImgPath,
+                '--out',
+                compVal.outImgPath
+            ]);
+            return new Promise(resolve => {
+                compImg.stdout.on('end', () => { resolve() })
+            });
+        } else if (
+            compVal.isLossy === 'true' &&
+            compVal.stripMeta === 'true' &&
+            compVal.imgQuality !== 'default'
+        ) {
+            const compImg = spawn('pngquant', [
+                '--skip-if-larger',
+                '--speed=1',
+                '--strip',
+                '--quality=1-' + compVal.imgQuality,
+                compVal.inImgPath, '--out',
+                compVal.outImgPath
+            ]);
+            return new Promise(resolve => {
+                compImg.stdout.on('end', () => { resolve() })
+            });
         } else { return false }
     }
     catch (err) {
-        sendError(compVal.res, `Caught ${err} Inside Async Func compressPNG!`);
+        sendError(compVal.res, `Caught ${err} In compressPNG!`);
     }
 };
-
 
 // Compresses GIF image with GIFSicle
 const compressGIF = async (compVal) => {
     try {
-        if (compVal.isLossy === 'false' && compVal.stripMeta === 'false') {
-            const compImg = spawn('gifsicle', ['-O3', compVal.inImgPath, '-o', compVal.outImgPath]);
-            return new Promise(resolve => { compImg.stdout.on('end', () => { resolve() }) });
-        } else if (compVal.isLossy === 'false' && compVal.stripMeta === 'true') {
-            const compImg = spawn('gifsicle', ['-O3', compVal.inImgPath, '-o', compVal.outImgPath]);
-            return new Promise(resolve => { compImg.stdout.on('end', () => { resolve() }) });
-        } else if (compVal.isLossy === 'true' && compVal.stripMeta === 'false' && compVal.imgQuality === 'default') {
-            const compImg = spawn('gifsicle', ['-O3', '--lossy=85', compVal.inImgPath, '-o', compVal.outImgPath]);
-            return new Promise(resolve => { compImg.stdout.on('end', () => { resolve() }) });
-        } else if (compVal.isLossy === 'true' && compVal.stripMeta === 'false' && compVal.imgQuality !== 'default') {
-            const compImg = spawn('gifsicle', ['-O3', '--lossy=' + compVal.imgQuality, compVal.inImgPath, '-o', compVal.outImgPath]);
-            return new Promise(resolve => { compImg.stdout.on('end', () => { resolve() }) });
-        } else if (compVal.isLossy === 'true' && compVal.stripMeta === 'true' && compVal.imgQuality === 'default') {
-            const compImg = spawn('gifsicle', ['-O3', '--lossy=85', compVal.inImgPath, '-o', compVal.outImgPath]);
-            return new Promise(resolve => { compImg.stdout.on('end', () => { resolve() }) });
-        } else if (compVal.isLossy === 'true' && compVal.stripMeta === 'true' && compVal.imgQuality !== 'default') {
-            const compImg = spawn('gifsicle', ['-O3', '--lossy=' + compVal.imgQuality, compVal.inImgPath, '-o', compVal.outImgPath]);
-            return new Promise(resolve => { compImg.stdout.on('end', () => { resolve() }) });
+        if (
+            compVal.isLossy === 'false' &&
+            compVal.stripMeta === 'false'
+        ) {
+            const compImg = spawn('gifsicle', [
+                '-O3',
+                compVal.inImgPath,
+                '-o',
+                compVal.outImgPath
+            ]);
+            return new Promise(resolve => {
+                compImg.stdout.on('end', () => { resolve() })
+            });
+        } else if (
+            compVal.isLossy === 'false' &&
+            compVal.stripMeta === 'true'
+        ) {
+            const compImg = spawn('gifsicle', [
+                '-O3',
+                compVal.inImgPath,
+                '-o',
+                compVal.outImgPath
+            ]);
+            return new Promise(resolve => {
+                compImg.stdout.on('end', () => { resolve() })
+            });
+        } else if (
+            compVal.isLossy === 'true' &&
+            compVal.stripMeta === 'false' &&
+            compVal.imgQuality === 'default'
+        ) {
+            const compImg = spawn('gifsicle', [
+                '-O3',
+                '--lossy=85',
+                compVal.inImgPath,
+                '-o',
+                compVal.outImgPath
+            ]);
+            return new Promise(resolve => {
+                compImg.stdout.on('end', () => { resolve() })
+            });
+        } else if (
+            compVal.isLossy === 'true' &&
+            compVal.stripMeta === 'false' &&
+            compVal.imgQuality !== 'default'
+        ) {
+            const compImg = spawn('gifsicle', [
+                '-O3',
+                '--lossy=' + compVal.imgQuality,
+                compVal.inImgPath, '-o',
+                compVal.outImgPath
+            ]);
+            return new Promise(resolve => {
+                compImg.stdout.on('end', () => { resolve() })
+            });
+        } else if (
+            compVal.isLossy === 'true' &&
+            compVal.stripMeta === 'true' &&
+            compVal.imgQuality === 'default'
+        ) {
+            const compImg = spawn('gifsicle', [
+                '-O3',
+                '--lossy=85',
+                compVal.inImgPath,
+                '-o',
+                compVal.outImgPath
+            ]);
+            return new Promise(resolve => {
+                compImg.stdout.on('end', () => { resolve() })
+            });
+        } else if (
+            compVal.isLossy === 'true' &&
+            compVal.stripMeta === 'true' &&
+            compVal.imgQuality !== 'default'
+        ) {
+            const compImg = spawn('gifsicle', [
+                '-O3',
+                '--lossy=' + compVal.imgQuality,
+                compVal.inImgPath,
+                '-o',
+                compVal.outImgPath
+            ]);
+            return new Promise(resolve => {
+                compImg.stdout.on('end', () => { resolve() })
+            });
         } else { return false }
     }
     catch (err) {
-        sendError(compVal.res, `Caught ${err} Inside Async Func compressGIF!`);
+        sendError(compVal.res, `Caught ${err} In compressGIF!`);
     }
 };
-
 
 // Compresses SVG image with Scour
 const compressSVG = async (compVal) => {
     try {
-        if (compVal.isLossy === 'false' && compVal.stripMeta === 'false') {
-            const compImg = spawn('scour', ['-i', compVal.inImgPath, '--no-line-breaks', '--enable-viewboxing', '--set-precision=10', '-o', compVal.outImgPath]);
-            return new Promise(resolve => { compImg.stdout.on('end', () => { resolve() }) });
-        } else if (compVal.isLossy === 'false' && compVal.stripMeta === 'true') {
-            const compImg = spawn('scour', ['-i', compVal.inImgPath, '--remove-descriptive-elements', '--enable-comment-stripping', '--no-line-breaks', '--enable-viewboxing', '--set-precision=10', '-o', compVal.outImgPath]);
-            return new Promise(resolve => { compImg.stdout.on('end', () => { resolve() }) });
-        } else if (compVal.isLossy === 'true' && compVal.stripMeta === 'false' && compVal.imgQuality === 'default') {
-            const compImg = spawn('scour', ['-i', compVal.inImgPath, '--no-line-breaks', '--enable-viewboxing', '--set-precision=5', '-o', compVal.outImgPath]);
-            return new Promise(resolve => { compImg.stdout.on('end', () => { resolve() }) });
-        } else if (compVal.isLossy === 'true' && compVal.stripMeta === 'false' && compVal.imgQuality !== 'default') {
-            const compImg = spawn('scour', ['-i', compVal.inImgPath, '--no-line-breaks', '--enable-viewboxing', '--set-precision=' + Math.round(compVal.imgQuality / 10), '-o', compVal.outImgPath]);
-            return new Promise(resolve => { compImg.stdout.on('end', () => { resolve() }) });
-        } else if (compVal.isLossy === 'true' && compVal.stripMeta === 'true' && compVal.imgQuality === 'default') {
-            const compImg = spawn('scour', ['-i', compVal.inImgPath, '--remove-descriptive-elements', '--enable-comment-stripping', '--no-line-breaks', '--enable-viewboxing', '--set-precision=5', '-o', compVal.outImgPath]);
-            return new Promise(resolve => { compImg.stdout.on('end', () => { resolve() }) });
-        } else if (compVal.isLossy === 'true' && compVal.stripMeta === 'true' && compVal.imgQuality !== 'default') {
-            const compImg = spawn('scour', ['-i', compVal.inImgPath, '--remove-descriptive-elements', '--enable-comment-stripping', '--no-line-breaks', '--enable-viewboxing', '--set-precision=' + Math.round(compVal.imgQuality / 10), '-o', compVal.outImgPath]);
-            return new Promise(resolve => { compImg.stdout.on('end', () => { resolve() }) });
+        if (
+            compVal.isLossy === 'false' &&
+            compVal.stripMeta === 'false'
+        ) {
+            const compImg = spawn('scour', [
+                '-i',
+                compVal.inImgPath,
+                '--no-line-breaks',
+                '--enable-viewboxing',
+                '--set-precision=10',
+                '-o',
+                compVal.outImgPath
+            ]);
+            return new Promise(resolve => {
+                compImg.stdout.on('end', () => { resolve() })
+            });
+        } else if (
+            compVal.isLossy === 'false' &&
+            compVal.stripMeta === 'true'
+        ) {
+            const compImg = spawn('scour', [
+                '-i',
+                compVal.inImgPath,
+                '--remove-descriptive-elements',
+                '--enable-comment-stripping',
+                '--no-line-breaks',
+                '--enable-viewboxing',
+                '--set-precision=10',
+                '-o',
+                compVal.outImgPath
+            ]);
+            return new Promise(resolve => {
+                compImg.stdout.on('end', () => { resolve() })
+            });
+        } else if (
+            compVal.isLossy === 'true' &&
+            compVal.stripMeta === 'false' &&
+            compVal.imgQuality === 'default'
+            ) {
+            const compImg = spawn('scour', [
+                '-i',
+                compVal.inImgPath,
+                '--no-line-breaks',
+                '--enable-viewboxing',
+                '--set-precision=5',
+                '-o',
+                compVal.outImgPath
+            ]);
+            return new Promise(resolve => {
+                compImg.stdout.on('end', () => { resolve() })
+            });
+        } else if (
+            compVal.isLossy === 'true' &&
+            compVal.stripMeta === 'false' &&
+            compVal.imgQuality !== 'default'
+            ) {
+            const compImg = spawn('scour', [
+                '-i',
+                compVal.inImgPath,
+                '--no-line-breaks',
+                '--enable-viewboxing',
+                '--set-precision=' + Math.round(compVal.imgQuality / 10),
+                '-o', compVal.outImgPath
+            ]);
+            return new Promise(resolve => {
+                compImg.stdout.on('end', () => { resolve() })
+            });
+        } else if (
+            compVal.isLossy === 'true' &&
+            compVal.stripMeta === 'true' &&
+            compVal.imgQuality === 'default'
+            ) {
+            const compImg = spawn('scour', [
+                '-i',
+                compVal.inImgPath,
+                '--remove-descriptive-elements',
+                '--enable-comment-stripping',
+                '--no-line-breaks',
+                '--enable-viewboxing',
+                '--set-precision=5',
+                '-o',
+                compVal.outImgPath
+            ]);
+            return new Promise(resolve => {
+                compImg.stdout.on('end', () => { resolve() })
+            });
+        } else if (
+            compVal.isLossy === 'true' &&
+            compVal.stripMeta === 'true' &&
+            compVal.imgQuality !== 'default'
+            ) {
+            const compImg = spawn('scour', [
+                '-i',
+                compVal.inImgPath,
+                '--remove-descriptive-elements',
+                '--enable-comment-stripping',
+                '--no-line-breaks',
+                '--enable-viewboxing',
+                '--set-precision=' + Math.round(compVal.imgQuality / 10),
+                '-o',
+                compVal.outImgPath
+            ]);
+            return new Promise(resolve => {
+                compImg.stdout.on('end', () => { resolve() })
+            });
         } else { return false }
     }
     catch (err) {
-        sendError(compVal.res, `Caught ${err} Inside Async Func compressSVG!`);
+        sendError(compVal.res, `Caught ${err} In compressSVG!`);
     }
 };
