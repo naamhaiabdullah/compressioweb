@@ -200,7 +200,7 @@ app.post('/compress', (req, res) => {
     start();
 });
 app.listen(3000, () => {
-    console.log(`API Server listening at https://api.example.com/compress`)
+    console.log(`API Server listening at http://localhost/compress`)
 });
 
 
