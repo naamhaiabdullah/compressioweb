@@ -9,7 +9,14 @@ const formidable = require('formidable');
 const validator = require('validator');
 const fs = require("fs");
 const uuid = require('uuid');
+const cors = require('cors');
 const findRemoveSync = require('find-remove');
+
+const server = app.listen(3000, () => {
+    console.log(`API Server listening at http://localhost/compress`)
+});
+server.keepAliveTimeout = 30000;
+server.headersTimeout = 30000; 
 
 // Global Variables
 let inParentFolder = __dirname + '/input/';
@@ -30,7 +37,7 @@ setInterval(() => {
 }, 60000);
 
 // Creating Server
-app.post('/compress', (req, res) => {
+app.post('/compress', cors({origin:'*'}), (req, res) => {
 
     //Setting Headers
     res.setHeader('Content-Type', 'application/json');
@@ -64,7 +71,8 @@ app.post('/compress', (req, res) => {
             // Assigning Max Image Size In A Request, 10MB Here
             let maxSize = 10 * 1024 * 1024;
 
-            // Creating Formidable Form
+            // Creating Formidable 
+            console.dir(req);
             const form = formidable({ multiples: true, maxFileSize: maxSize });
             await new Promise((resolve, reject) => {
                 form.parse(req, async (err, fields, files) => {
@@ -198,9 +206,6 @@ app.post('/compress', (req, res) => {
         }
     };
     start();
-});
-app.listen(3000, () => {
-    console.log(`API Server listening at http://localhost/compress`)
 });
 
 
