@@ -35,6 +35,12 @@ let compVal = {};
 let compValAll = [];
 let responseData = [];
 
+// Max Number of Images in a Request
+let maxImgs = 10;
+
+// Total Image Size, 50MB Here
+let maxSize = 50 * 1024 * 1024;
+
 // Deleting images older than one hour from input and output folders
 setInterval(() => {
     findRemoveSync(inParentFolder, { age: { seconds: 3600 }, dir: '*' });
@@ -62,36 +68,33 @@ app.post('/compress', cors(corsOptions), (req, res) => {
             await new Promise(resolve => {
                 fs.mkdir(inChildFolder, { recursive: true }, (err) => {
                     if (err) { 
-                        return sendError(res, 500, 'Code 01');
+                        return sendError(res, 500, 'Code01');
                     } else { resolve(); }
                 })
             });
             await new Promise(resolve => {
                 fs.mkdir(outChildFolder, { recursive: true }, (err) => {
                     if (err) {
-                        return sendError(res, 500,  'Code 02');
+                        return sendError(res, 500,  'Code02');
                     } else { resolve(); }
                 })
             });
 
-            // Assigning Total Images Size In A Request, 50MB Here
-            let maxSize = 50 * 1024 * 1024;
-
             // Creating Formidable 
             const form = formidable({ multiples: true, maxFileSize: maxSize });
-            await new Promise((resolve, reject) => {
+            await new Promise(resolve => {
                 form.parse(req, async (err, fields, files) => {
 
                     // Some Form Error
                     if (err) {
-                        return sendError(res, 500, 'Code 03');
+                        return sendError(res, 500, 'Code03');
                     } 
                     
                     // If Image exists?
                     else if (Object.keys(files).length === 0) {
-                        return sendError(res, 400, 'No Images Provided');
+                        return sendError(res, 400, 'Code04');
                     } else if (files.inImgs.size === 0) {
-                        return sendError(res, 400, 'No Images Provided');
+                        return sendError(res, 400, 'Code04');
                     }
 
                     // If Single Image, Convert Object to Array.
@@ -137,9 +140,8 @@ app.post('/compress', cors(corsOptions), (req, res) => {
 
                     // If Total Images > 10, Send Error.
                     totalImgs = Object.keys(files.inImgs).length;
-                    let maxImgs = 10;
                     if (totalImgs > maxImgs) {
-                        return sendError(res, 400, `Exceeded Max. ${maxImgs} Images Per Request`);
+                        return sendError(res, 400, 'Code05');
                     }
 
                     // Iterating Over All The Images
@@ -178,7 +180,7 @@ app.post('/compress', cors(corsOptions), (req, res) => {
                         // Moving Images from Temp to Input Folder
                         await new Promise(resolve => {
                             fs.rename(tempImg, inImgPath, (err) => {
-                                if (err) { return sendError(res, 500, 'Code 04'); }
+                                if (err) { return sendError(res, 500, 'Code06'); }
                                 else { resolve(); }
                             })
                         });
@@ -210,7 +212,7 @@ app.post('/compress', cors(corsOptions), (req, res) => {
             sendResponse(compValAll, totalImgs, res);
         }
         catch (err) {
-            sendError(res, 500, 'Code 05');
+            sendError(res, 500, 'Code07');
         }
     };
     start();
@@ -224,7 +226,7 @@ const sendResponse = async (compValAll, totalImgs, res) => {
             let inStats = await new Promise(resolve => {
                 fs.stat(compValAll[i].inImgPath, (err, stats) => {
                     if (err) {
-                        return sendError(res, 500, 'Code 06');
+                        return sendError(res, 500, 'Code08');
                     } else { resolve(stats); }
                 })
             });
@@ -234,7 +236,7 @@ const sendResponse = async (compValAll, totalImgs, res) => {
             let outStats = await new Promise(resolve => {
                 fs.stat(compValAll[i].outImgPath, (err, stats) => {
                     if (err) {
-                        return sendError(res, 500, 'Code 07');
+                        return sendError(res, 500, 'Code09');
                     } else { resolve(stats); }
                 })
             });
@@ -252,10 +254,14 @@ const sendResponse = async (compValAll, totalImgs, res) => {
                 outImgURL: compValAll[i].outImgURL
             };
         }
-        res.end(JSON.stringify({ responseData }));
+        res.end(JSON.stringify({ 
+            maxImgs: `${maxImgs} Images`,
+            maxSize: `${maxSize/1048576} MB`,
+            responseData
+        }));
     }
     catch (err) {
-        sendError(res, 500, 'Code 08');
+        sendError(res, 500, 'Code10');
     }
 }
 
@@ -292,7 +298,7 @@ const sendError = (res, respCode, error) => {
 
 
 // Compresses JPEG image with JPEGOptim
-const compressJPG = async (compVal) => {
+const compressJPG = (compVal) => {
     try {
         if (
             compVal.isLossy === 'false'
@@ -374,12 +380,12 @@ const compressJPG = async (compVal) => {
         }
     }
     catch (err) {
-        return sendError(compVal.res, 500, 'Code 09');
+        return sendError(compVal.res, 500, 'Code11');
     }
 };
 
 // Compresses PNG image with PNGQuant and OptiPNG
-const compressPNG = async (compVal) => {
+const compressPNG = (compVal) => {
     try {
         if (
             compVal.isLossy === 'false' &&
@@ -472,12 +478,12 @@ const compressPNG = async (compVal) => {
         }
     }
     catch (err) {
-        return sendError(compVal.res, 500, 'Code 10');
+        return sendError(compVal.res, 500, 'Code12');
     }
 };
 
 // Compresses GIF image with GIFSicle
-const compressGIF = async (compVal) => {
+const compressGIF = (compVal) => {
     try {
         if (
             compVal.isLossy === 'false' &&
@@ -567,12 +573,12 @@ const compressGIF = async (compVal) => {
         }
     }
     catch (err) {
-        return sendError(compVal.res, 500, 'Code 11');
+        return sendError(compVal.res, 500, 'Code13');
     }
 };
 
 // Compresses SVG image with Scour
-const compressSVG = async (compVal) => {
+const compressSVG = (compVal) => {
     try {
         if (
             compVal.isLossy === 'false' &&
@@ -682,6 +688,6 @@ const compressSVG = async (compVal) => {
         }
     }
     catch (err) {
-        return sendError(compVal.res, 500, 'Code 12');
+        return sendError(compVal.res, 500, 'Code14');
     }
 };
