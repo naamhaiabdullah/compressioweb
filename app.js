@@ -42,6 +42,9 @@ app.post('/compress', cors({origin:'*'}), (req, res) => {
     //Setting Headers
     res.setHeader('Content-Type', 'application/json');
 
+    // Cleaning Response Data
+    responseData = [];
+
     // Creating Unique In/Out Subdirectory
     let uniqueUUID = uuid.v4();
     let inChildFolder = inParentFolder + uniqueUUID;
@@ -68,11 +71,10 @@ app.post('/compress', cors({origin:'*'}), (req, res) => {
                 })
             });
 
-            // Assigning Max Image Size In A Request, 10MB Here
-            let maxSize = 10 * 1024 * 1024;
+            // Assigning Total Images Size In A Request, 50MB Here
+            let maxSize = 50 * 1024 * 1024;
 
             // Creating Formidable 
-            console.dir(req);
             const form = formidable({ multiples: true, maxFileSize: maxSize });
             await new Promise((resolve, reject) => {
                 form.parse(req, async (err, fields, files) => {
@@ -80,12 +82,19 @@ app.post('/compress', cors({origin:'*'}), (req, res) => {
                     // Some Form Error
                     if (err) { reject(sendError(res, `Error Parsing Form with ${err}`)) }
 
-                    // if Image?
-                    if (!files.inImgs) {
+                    // If Image exists?
+                    if (Object.keys(files).length === 0) {
+                        reject(sendError(res, 'No Images Posted'))
+                    } else if (files.inImgs.size === 0) {
                         reject(sendError(res, 'No Images Posted'))
                     }
 
-                    // stripMeta?
+                    // If Single Image Upload Convert files.inImgs Into Array.
+                    else if (files.inImgs.size > 0) { 
+                        files.inImgs = [files.inImgs];
+                    }
+
+                    // If stripMeta exists?
                     if (
                         typeof fields.stripMeta === 'undefined' ||
                         fields.stripMeta.trim() === 'true'
@@ -95,7 +104,7 @@ app.post('/compress', cors({origin:'*'}), (req, res) => {
                         fields.stripMeta = 'false'
                     }
 
-                    // isLossy?
+                    // If isLossy exists?
                     if (
                         typeof fields.isLossy === 'undefined' ||
                         fields.isLossy.trim() === 'true'
@@ -105,7 +114,7 @@ app.post('/compress', cors({origin:'*'}), (req, res) => {
                         fields.isLossy = 'false'
                     }
 
-                    // imgQuality?
+                    // If imgQuality exists and is between 1-100?
                     if (
                         typeof fields.imgQuality === 'undefined' ||
                         isNaN(parseInt(fields.imgQuality.trim()))
@@ -121,14 +130,9 @@ app.post('/compress', cors({origin:'*'}), (req, res) => {
                         }
                     }
 
-                    // If Single Image Upload Then Convert files.inImgs Into Array.
-                    if (files.inImgs.size > 0) {
-                        files.inImgs = [files.inImgs];
-                    }
-
-                    // If Total Images > 5, Throw Error.
+                    // If Total Images > 10, Throw Error.
                     totalImgs = Object.keys(files.inImgs).length;
-                    let maxImgs = 5;
+                    let maxImgs = 10;
                     if (totalImgs > maxImgs) {
                         reject(sendError(res, `Max ${maxImgs} Image Per Request`));
                     }
@@ -213,7 +217,7 @@ app.post('/compress', cors({origin:'*'}), (req, res) => {
 const sendResponse = async (compValAll, totalImgs, res) => {
     try {
         for (let i = 0; i < totalImgs; i++) {
-
+            console.log(i);
             let inStats = await new Promise((resolve, reject) => {
                 fs.stat(compValAll[i].inImgPath, (err, stats) => {
                     if (err) {
