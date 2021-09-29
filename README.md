@@ -13,8 +13,8 @@
 #### POST Request, No GET
 ```
 It receives all parameters in a POST request at https://api.example.com/compress.     
-You can choose maximum 5 images at a time.
-Each image can't be larger than 10MB
+You can choose maximum 10 images at a time.
+Total image can't be larger than 50MB.
 Send image with 'inImgs' key through POST request.
 ```
 
