@@ -62,14 +62,14 @@ app.post('/compress', cors(corsOptions), (req, res) => {
             await new Promise(resolve => {
                 fs.mkdir(inChildFolder, { recursive: true }, (err) => {
                     if (err) { 
-                        return sendError(res, 500, 'Failed to Create Input Dir');
+                        return sendError(res, 500, 'Code 01');
                     } else { resolve(); }
                 })
             });
             await new Promise(resolve => {
                 fs.mkdir(outChildFolder, { recursive: true }, (err) => {
                     if (err) {
-                        return sendError(res, 500,  'Failed to Create Output Dir');
+                        return sendError(res, 500,  'Code 02');
                     } else { resolve(); }
                 })
             });
@@ -84,14 +84,14 @@ app.post('/compress', cors(corsOptions), (req, res) => {
 
                     // Some Form Error
                     if (err) {
-                        return sendError(res, 400, `Error Parsing Form with ${err}`);
+                        return sendError(res, 500, 'Code 03');
                     } 
                     
                     // If Image exists?
                     else if (Object.keys(files).length === 0) {
-                        return sendError(res, 400, 'No Images Postedd');
+                        return sendError(res, 400, 'No Images Provided');
                     } else if (files.inImgs.size === 0) {
-                        return sendError(res, 400, 'No Images Posted');
+                        return sendError(res, 400, 'No Images Provided');
                     }
 
                     // If Single Image, Convert Object to Array.
@@ -139,7 +139,7 @@ app.post('/compress', cors(corsOptions), (req, res) => {
                     totalImgs = Object.keys(files.inImgs).length;
                     let maxImgs = 10;
                     if (totalImgs > maxImgs) {
-                        return sendError(res, 400, `Max ${maxImgs} Image Per Request`);
+                        return sendError(res, 400, `Exceeded Max. ${maxImgs} Images Per Request`);
                     }
 
                     // Iterating Over All The Images
@@ -178,7 +178,7 @@ app.post('/compress', cors(corsOptions), (req, res) => {
                         // Moving Images from Temp to Input Folder
                         await new Promise(resolve => {
                             fs.rename(tempImg, inImgPath, (err) => {
-                                if (err) { return sendError(res, 500, 'Failed to Move Image'); }
+                                if (err) { return sendError(res, 500, 'Code 04'); }
                                 else { resolve(); }
                             })
                         });
@@ -198,7 +198,7 @@ app.post('/compress', cors(corsOptions), (req, res) => {
                             await compressGIF(compVal);
                             compValAll[i] = compVal;
                         } else {
-                            return sendError(res, 400, 'File Not Supported!');
+                            return sendError(res, 400, 'Image Not Supported!');
                         }
                     }
                     // Resolving Promise on Loop End
@@ -210,7 +210,7 @@ app.post('/compress', cors(corsOptions), (req, res) => {
             sendResponse(compValAll, totalImgs, res);
         }
         catch (err) {
-            sendError(res, 500, `Caught ${err} In Start!`);
+            sendError(res, 500, 'Code 05');
         }
     };
     start();
@@ -224,7 +224,7 @@ const sendResponse = async (compValAll, totalImgs, res) => {
             let inStats = await new Promise(resolve => {
                 fs.stat(compValAll[i].inImgPath, (err, stats) => {
                     if (err) {
-                        return sendError(res, 500, 'Failed to Read sizeBefore');
+                        return sendError(res, 500, 'Code 06');
                     } else { resolve(stats); }
                 })
             });
@@ -234,7 +234,7 @@ const sendResponse = async (compValAll, totalImgs, res) => {
             let outStats = await new Promise(resolve => {
                 fs.stat(compValAll[i].outImgPath, (err, stats) => {
                     if (err) {
-                        return sendError(res, 500, 'Failed to Read sizeAfter');
+                        return sendError(res, 500, 'Code 07');
                     } else { resolve(stats); }
                 })
             });
@@ -255,7 +255,7 @@ const sendResponse = async (compValAll, totalImgs, res) => {
         res.end(JSON.stringify({ responseData }));
     }
     catch (err) {
-        sendError(res, 500, `Caught ${err} In sendResponse!`);
+        sendError(res, 500, 'Code 08');
     }
 }
 
@@ -374,7 +374,7 @@ const compressJPG = async (compVal) => {
         }
     }
     catch (err) {
-        return sendError(compVal.res, 500, `Caught ${err} In compressJPG!`);
+        return sendError(compVal.res, 500, 'Code 09');
     }
 };
 
@@ -472,7 +472,7 @@ const compressPNG = async (compVal) => {
         }
     }
     catch (err) {
-        return sendError(compVal.res, 500, `Caught ${err} In compressPNG!`);
+        return sendError(compVal.res, 500, 'Code 10');
     }
 };
 
@@ -567,7 +567,7 @@ const compressGIF = async (compVal) => {
         }
     }
     catch (err) {
-        return sendError(compVal.res, 500, `Caught ${err} In compressGIF!`);
+        return sendError(compVal.res, 500, 'Code 11');
     }
 };
 
@@ -682,6 +682,6 @@ const compressSVG = async (compVal) => {
         }
     }
     catch (err) {
-        return sendError(compVal.res, 500, `Caught ${err} In compressSVG!`);
+        return sendError(compVal.res, 500, 'Code 12');
     }
 };
