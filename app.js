@@ -13,10 +13,11 @@ const cors = require('cors');
 const findRemoveSync = require('find-remove');
 
 const server = app.listen(3000, () => {
-    console.log(`API Server listening at http://localhost/compress`)
+    console.log(`API Server listening at http://localhost/compress`);
 });
-server.keepAliveTimeout = 30000;
-server.headersTimeout = 30000; 
+server.setTimeout(30 * 1000);
+server.keepAliveTimeout = 30 * 1000;
+server.headersTimeout = 30 * 1000;
 
 // Global Variables
 let inParentFolder = __dirname + '/input/';
@@ -24,6 +25,10 @@ let outParentFolder = __dirname + '/output/';
 
 let inURLTemp = 'https://api.example.com/input/';
 let outURLTemp = 'https://api.example.com/output/';
+let corsOptions = {
+    origin: 'https://api.example.com',
+    methods: '[POST]'
+}
 
 let totalImgs = null;
 let compVal = {};
@@ -37,7 +42,7 @@ setInterval(() => {
 }, 60000);
 
 // Creating Server
-app.post('/compress', cors({origin:'*'}), (req, res) => {
+app.post('/compress', cors(corsOptions), (req, res) => {
 
     //Setting Headers
     res.setHeader('Content-Type', 'application/json');
@@ -54,20 +59,18 @@ app.post('/compress', cors({origin:'*'}), (req, res) => {
 
         try {
             // Creating Unique In/Out Subdirectory
-            await new Promise((resolve, reject) => {
+            await new Promise(resolve => {
                 fs.mkdir(inChildFolder, { recursive: true }, (err) => {
                     if (err) { 
-                        reject(sendError(res, 'Failed to Create Input Dir'));
-                    }
-                    else { resolve() }
+                        return sendError(res, 500, 'Failed to Create Input Dir');
+                    } else { resolve(); }
                 })
             });
-            await new Promise((resolve, reject) => {
+            await new Promise(resolve => {
                 fs.mkdir(outChildFolder, { recursive: true }, (err) => {
                     if (err) {
-                        reject(sendError(res, 'Failed to Create Input Dir'));
-                    }
-                    else { resolve() }
+                        return sendError(res, 500,  'Failed to Create Output Dir');
+                    } else { resolve(); }
                 })
             });
 
@@ -80,61 +83,63 @@ app.post('/compress', cors({origin:'*'}), (req, res) => {
                 form.parse(req, async (err, fields, files) => {
 
                     // Some Form Error
-                    if (err) { reject(sendError(res, `Error Parsing Form with ${err}`)) }
-
+                    if (err) {
+                        return sendError(res, 400, `Error Parsing Form with ${err}`);
+                    } 
+                    
                     // If Image exists?
-                    if (Object.keys(files).length === 0) {
-                        reject(sendError(res, 'No Images Posted'))
+                    else if (Object.keys(files).length === 0) {
+                        return sendError(res, 400, 'No Images Postedd');
                     } else if (files.inImgs.size === 0) {
-                        reject(sendError(res, 'No Images Posted'))
+                        return sendError(res, 400, 'No Images Posted');
                     }
 
-                    // If Single Image Upload Convert files.inImgs Into Array.
-                    else if (files.inImgs.size > 0) { 
+                    // If Single Image, Convert Object to Array.
+                    else if (files.inImgs.size > 0) {
                         files.inImgs = [files.inImgs];
                     }
 
-                    // If stripMeta exists?
+                    // If stripMeta Exists?
                     if (
                         typeof fields.stripMeta === 'undefined' ||
                         fields.stripMeta.trim() === 'true'
                     ) {
-                        fields.stripMeta = 'true'
+                        fields.stripMeta = 'true';
                     } else {
-                        fields.stripMeta = 'false'
+                        fields.stripMeta = 'false';
                     }
 
-                    // If isLossy exists?
+                    // If isLossy Exists?
                     if (
                         typeof fields.isLossy === 'undefined' ||
                         fields.isLossy.trim() === 'true'
                     ) {
-                        fields.isLossy = 'true'
+                        fields.isLossy = 'true';
                     } else {
-                        fields.isLossy = 'false'
+                        fields.isLossy = 'false';
                     }
 
-                    // If imgQuality exists and is between 1-100?
+                    // If imgQuality Exists and Is Between 1-100?
                     if (
                         typeof fields.imgQuality === 'undefined' ||
                         isNaN(parseInt(fields.imgQuality.trim()))
                     ) {
-                        fields.imgQuality = 'default'
+                        fields.imgQuality = 'default';
                     } else {
                         let imgQualityTemp = parseInt(fields.imgQuality.trim());
                         fields.imgQuality = 'default';
 
-                        // Checking if imageQuality is in range 1-100
+                        // Checking If imgQuality Is In Range 1-100
                         if (((imgQualityTemp - 1) * (imgQualityTemp - 100) <= 0)) {
                             fields.imgQuality = imgQualityTemp;
                         }
                     }
 
-                    // If Total Images > 10, Throw Error.
+                    // If Total Images > 10, Send Error.
                     totalImgs = Object.keys(files.inImgs).length;
                     let maxImgs = 10;
                     if (totalImgs > maxImgs) {
-                        reject(sendError(res, `Max ${maxImgs} Image Per Request`));
+                        return sendError(res, 400, `Max ${maxImgs} Image Per Request`);
                     }
 
                     // Iterating Over All The Images
@@ -171,10 +176,10 @@ app.post('/compress', cors({origin:'*'}), (req, res) => {
                         };
 
                         // Moving Images from Temp to Input Folder
-                        await new Promise((resolve, reject) => {
+                        await new Promise(resolve => {
                             fs.rename(tempImg, inImgPath, (err) => {
-                                if (err) { reject(sendError(res, 'Failed to Move Image')); }
-                                else { resolve() }
+                                if (err) { return sendError(res, 500, 'Failed to Move Image'); }
+                                else { resolve(); }
                             })
                         });
 
@@ -182,8 +187,7 @@ app.post('/compress', cors({origin:'*'}), (req, res) => {
                         if (imgExt === 'JPEG' || imgExt === 'JPG') {
                             await compressJPG(compVal);
                             compValAll[i] = compVal;
-                        }
-                        else if (imgExt === 'PNG') {
+                        } else if (imgExt === 'PNG') {
                             await compressPNG(compVal);
                             compValAll[i] = compVal;
 
@@ -194,7 +198,7 @@ app.post('/compress', cors({origin:'*'}), (req, res) => {
                             await compressGIF(compVal);
                             compValAll[i] = compVal;
                         } else {
-                            reject(sendError(res, 'File Not Supported!'));
+                            return sendError(res, 400, 'File Not Supported!');
                         }
                     }
                     // Resolving Promise on Loop End
@@ -203,10 +207,10 @@ app.post('/compress', cors({origin:'*'}), (req, res) => {
             });
 
             // Sending Response
-            return sendResponse(compValAll, totalImgs, res);
+            sendResponse(compValAll, totalImgs, res);
         }
         catch (err) {
-            return sendError(res, `Caught ${err} In Start!`);
+            sendError(res, 500, `Caught ${err} In Start!`);
         }
     };
     start();
@@ -217,24 +221,21 @@ app.post('/compress', cors({origin:'*'}), (req, res) => {
 const sendResponse = async (compValAll, totalImgs, res) => {
     try {
         for (let i = 0; i < totalImgs; i++) {
-            console.log(i);
-            let inStats = await new Promise((resolve, reject) => {
+            let inStats = await new Promise(resolve => {
                 fs.stat(compValAll[i].inImgPath, (err, stats) => {
                     if (err) {
-                        reject(sendError(res, 'Failed to Read sizeBefore'));
-                    }
-                    else { resolve(stats) }
+                        return sendError(res, 500, 'Failed to Read sizeBefore');
+                    } else { resolve(stats); }
                 })
             });
             let inSizeInKB = inStats.size / 1024;
             let sizeBefore = Math.round(inSizeInKB);
 
-            let outStats = await new Promise((resolve, reject) => {
+            let outStats = await new Promise(resolve => {
                 fs.stat(compValAll[i].outImgPath, (err, stats) => {
                     if (err) {
-                        reject(sendError(res, 'Failed to Read sizeAfter'));
-                    }
-                    else { resolve(stats) }
+                        return sendError(res, 500, 'Failed to Read sizeAfter');
+                    } else { resolve(stats); }
                 })
             });
             let outSizeInKB = outStats.size / 1024;
@@ -251,27 +252,44 @@ const sendResponse = async (compValAll, totalImgs, res) => {
                 outImgURL: compValAll[i].outImgURL
             };
         }
-        res.json({ responseData });
+        res.end(JSON.stringify({ responseData }));
     }
     catch (err) {
-        sendError(res, `Caught ${err} In sendResponse!`);
-    }
-    finally {
-        return res.end();
+        sendError(res, 500, `Caught ${err} In sendResponse!`);
     }
 }
 
 // Send Error in JSON
-const sendError = (res, error) => {
-    try {
-        res.json({ Error: error });
-    } catch (err) {
-        res.json({ Error: `Caught ${err} In sendError!` });
-    } finally {
-        return res.end();
-    }
-
+const sendError = (res, respCode, error) => {
+    res.status(respCode).end(JSON.stringify({ Error: error }));
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Compresses JPEG image with JPEGOptim
 const compressJPG = async (compVal) => {
@@ -285,7 +303,7 @@ const compressJPG = async (compVal) => {
                 '--dest=' + compVal.outChildFolder
             ]);
             return new Promise(resolve => {
-                compImg.stdout.on('end', () => { resolve() })
+                compImg.stdout.on('end', () => { resolve(); })
             });
         } else if (
             compVal.isLossy === 'false' &&
@@ -297,7 +315,7 @@ const compressJPG = async (compVal) => {
                 '--dest=' + compVal.outChildFolder
             ]);
             return new Promise(resolve => {
-                compImg.stdout.on('end', () => { resolve() })
+                compImg.stdout.on('end', () => { resolve(); })
             });
         } else if (
             compVal.isLossy === 'true' &&
@@ -310,7 +328,7 @@ const compressJPG = async (compVal) => {
                 '--dest=' + compVal.outChildFolder
             ]);
             return new Promise(resolve => {
-                compImg.stdout.on('end', () => { resolve() })
+                compImg.stdout.on('end', () => { resolve(); })
             });
         } else if (
             compVal.isLossy === 'true' &&
@@ -323,7 +341,7 @@ const compressJPG = async (compVal) => {
                 '--dest=' + compVal.outChildFolder
             ]);
             return new Promise(resolve => {
-                compImg.stdout.on('end', () => { resolve() })
+                compImg.stdout.on('end', () => { resolve(); })
             });
         } else if (
             compVal.isLossy === 'true' &&
@@ -337,7 +355,7 @@ const compressJPG = async (compVal) => {
                 '--dest=' + compVal.outChildFolder
             ]);
             return new Promise(resolve => {
-                compImg.stdout.on('end', () => { resolve() })
+                compImg.stdout.on('end', () => { resolve(); })
             });
         } else if (
             compVal.isLossy === 'true' &&
@@ -351,12 +369,12 @@ const compressJPG = async (compVal) => {
                 '--dest=' + compVal.outChildFolder
             ]);
             return new Promise(resolve => {
-                compImg.stdout.on('end', () => { resolve() })
+                compImg.stdout.on('end', () => { resolve(); })
             });
-        } else { return false }
+        }
     }
     catch (err) {
-        sendError(compVal.res, `Caught ${err} In compressJPG!`);
+        return sendError(compVal.res, 500, `Caught ${err} In compressJPG!`);
     }
 };
 
@@ -372,7 +390,7 @@ const compressPNG = async (compVal) => {
                 '-out', compVal.outImgPath
             ]);
             return new Promise(resolve => {
-                compImg.stdout.on('end', () => { resolve() })
+                compImg.stdout.on('end', () => { resolve(); })
             });
         } else if (
             compVal.isLossy === 'false' &&
@@ -385,7 +403,7 @@ const compressPNG = async (compVal) => {
                 compVal.outImgPath
             ]);
             return new Promise(resolve => {
-                compImg.stdout.on('end', () => { resolve() })
+                compImg.stdout.on('end', () => { resolve(); })
             });
         } else if (
             compVal.isLossy === 'true' &&
@@ -401,7 +419,7 @@ const compressPNG = async (compVal) => {
                 compVal.outImgPath
             ]);
             return new Promise(resolve => {
-                compImg.stdout.on('end', () => { resolve() })
+                compImg.stdout.on('end', () => { resolve(); })
             });
         } else if (
             compVal.isLossy === 'true' &&
@@ -416,7 +434,7 @@ const compressPNG = async (compVal) => {
                 compVal.outImgPath
             ]);
             return new Promise(resolve => {
-                compImg.stdout.on('end', () => { resolve() })
+                compImg.stdout.on('end', () => { resolve(); })
             });
         } else if (
             compVal.isLossy === 'true' &&
@@ -433,7 +451,7 @@ const compressPNG = async (compVal) => {
                 compVal.outImgPath
             ]);
             return new Promise(resolve => {
-                compImg.stdout.on('end', () => { resolve() })
+                compImg.stdout.on('end', () => { resolve(); })
             });
         } else if (
             compVal.isLossy === 'true' &&
@@ -449,12 +467,12 @@ const compressPNG = async (compVal) => {
                 compVal.outImgPath
             ]);
             return new Promise(resolve => {
-                compImg.stdout.on('end', () => { resolve() })
+                compImg.stdout.on('end', () => { resolve(); })
             });
-        } else { return false }
+        }
     }
     catch (err) {
-        sendError(compVal.res, `Caught ${err} In compressPNG!`);
+        return sendError(compVal.res, 500, `Caught ${err} In compressPNG!`);
     }
 };
 
@@ -472,7 +490,7 @@ const compressGIF = async (compVal) => {
                 compVal.outImgPath
             ]);
             return new Promise(resolve => {
-                compImg.stdout.on('end', () => { resolve() })
+                compImg.stdout.on('end', () => { resolve(); })
             });
         } else if (
             compVal.isLossy === 'false' &&
@@ -485,7 +503,7 @@ const compressGIF = async (compVal) => {
                 compVal.outImgPath
             ]);
             return new Promise(resolve => {
-                compImg.stdout.on('end', () => { resolve() })
+                compImg.stdout.on('end', () => { resolve(); })
             });
         } else if (
             compVal.isLossy === 'true' &&
@@ -500,7 +518,7 @@ const compressGIF = async (compVal) => {
                 compVal.outImgPath
             ]);
             return new Promise(resolve => {
-                compImg.stdout.on('end', () => { resolve() })
+                compImg.stdout.on('end', () => { resolve(); })
             });
         } else if (
             compVal.isLossy === 'true' &&
@@ -514,7 +532,7 @@ const compressGIF = async (compVal) => {
                 compVal.outImgPath
             ]);
             return new Promise(resolve => {
-                compImg.stdout.on('end', () => { resolve() })
+                compImg.stdout.on('end', () => { resolve(); })
             });
         } else if (
             compVal.isLossy === 'true' &&
@@ -529,7 +547,7 @@ const compressGIF = async (compVal) => {
                 compVal.outImgPath
             ]);
             return new Promise(resolve => {
-                compImg.stdout.on('end', () => { resolve() })
+                compImg.stdout.on('end', () => { resolve(); })
             });
         } else if (
             compVal.isLossy === 'true' &&
@@ -544,12 +562,12 @@ const compressGIF = async (compVal) => {
                 compVal.outImgPath
             ]);
             return new Promise(resolve => {
-                compImg.stdout.on('end', () => { resolve() })
+                compImg.stdout.on('end', () => { resolve(); })
             });
-        } else { return false }
+        }
     }
     catch (err) {
-        sendError(compVal.res, `Caught ${err} In compressGIF!`);
+        return sendError(compVal.res, 500, `Caught ${err} In compressGIF!`);
     }
 };
 
@@ -570,7 +588,7 @@ const compressSVG = async (compVal) => {
                 compVal.outImgPath
             ]);
             return new Promise(resolve => {
-                compImg.stdout.on('end', () => { resolve() })
+                compImg.stdout.on('end', () => { resolve(); })
             });
         } else if (
             compVal.isLossy === 'false' &&
@@ -588,7 +606,7 @@ const compressSVG = async (compVal) => {
                 compVal.outImgPath
             ]);
             return new Promise(resolve => {
-                compImg.stdout.on('end', () => { resolve() })
+                compImg.stdout.on('end', () => { resolve(); })
             });
         } else if (
             compVal.isLossy === 'true' &&
@@ -605,7 +623,7 @@ const compressSVG = async (compVal) => {
                 compVal.outImgPath
             ]);
             return new Promise(resolve => {
-                compImg.stdout.on('end', () => { resolve() })
+                compImg.stdout.on('end', () => { resolve(); })
             });
         } else if (
             compVal.isLossy === 'true' &&
@@ -621,7 +639,7 @@ const compressSVG = async (compVal) => {
                 '-o', compVal.outImgPath
             ]);
             return new Promise(resolve => {
-                compImg.stdout.on('end', () => { resolve() })
+                compImg.stdout.on('end', () => { resolve(); })
             });
         } else if (
             compVal.isLossy === 'true' &&
@@ -640,7 +658,7 @@ const compressSVG = async (compVal) => {
                 compVal.outImgPath
             ]);
             return new Promise(resolve => {
-                compImg.stdout.on('end', () => { resolve() })
+                compImg.stdout.on('end', () => { resolve(); })
             });
         } else if (
             compVal.isLossy === 'true' &&
@@ -659,11 +677,11 @@ const compressSVG = async (compVal) => {
                 compVal.outImgPath
             ]);
             return new Promise(resolve => {
-                compImg.stdout.on('end', () => { resolve() })
+                compImg.stdout.on('end', () => { resolve(); })
             });
-        } else { return false }
+        }
     }
     catch (err) {
-        sendError(compVal.res, `Caught ${err} In compressSVG!`);
+        return sendError(compVal.res, 500, `Caught ${err} In compressSVG!`);
     }
 };
