@@ -270,33 +270,6 @@ const sendError = (res, respCode, error) => {
     res.status(respCode).end(JSON.stringify({ Error: error }));
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Compresses JPEG image with JPEGOptim
 const compressJPG = (compVal) => {
     try {
