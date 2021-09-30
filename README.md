@@ -126,7 +126,7 @@ http {
 #### Creating API Directory with Necessary Permission
 
 ```
-sudo mkdir -p /var/www/api.example.com /var/www/api.example.com/input /var/www/api.example.com/output
+sudo mkdir -p /var/www/api.example.com
 sudo chown -R www-data:www-data /var/www/api.example.com
 sudo chmod -R 755 /var/www/api.example.com
 ```
@@ -149,7 +149,7 @@ server {
 	    proxy_set_header Connection 'upgrade';
 	    proxy_set_header Host $host;
 	    proxy_cache_bypass $http_upgrade;
-	    proxy_read_timeout 60s;
+	    proxy_read_timeout 30s;
     }
     
     # Input Folder
