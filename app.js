@@ -12,9 +12,16 @@ const uuid = require('uuid');
 const cors = require('cors');
 const findRemoveSync = require('find-remove');
 
+// Allowing Only example.com to Make API Call From Browser.
+app.use(cors({origin:'https://example.com'}));
 
-const server = app.listen(3000, () => {
-    console.log(`API Server listening at http://localhost/compress`);
+// For Testing on Localhost
+// app.use(cors({origin:'*'}));
+// app.use('/input', express.static('input'));
+// app.use('/output', express.static('output'));
+
+const server = app.listen(3001, () => {
+    console.log('API Server Listening');
 });
 server.setTimeout(30 * 1000);
 server.keepAliveTimeout = 30 * 1000;
@@ -26,22 +33,22 @@ let outParentFolder = __dirname + '/output/';
 
 let inURLTemp = 'https://api.example.com/input/';
 let outURLTemp = 'https://api.example.com/output/';
-let corsOptions = {
-    origin: 'https://api.example.com',
-    methods: '[POST]'
-}
 
-let totalImgs = null;
-let totalSize = null;
+// For Testing on Localhost
+// let inURLTemp = 'http://localhost:8000/input/';
+// let outURLTemp = 'http://localhost:8000/output/';
+
+let uploadedImgs = null;
+let uploadedSize = null;
 let compVal = {};
 let compValAll = [];
 let responseData = [];
 
 // Max Number of Images in a Request
-let maxImgs = 10;
+let allowedImgs = 10;
 
 // Total Image Size, 50MB Here
-let maxSize = 50 * 1024 * 1024;
+let allowedSize = 50 * 1024 * 1024;
 
 // Deleting images older than one hour from input and output folders
 setInterval(() => {
@@ -50,7 +57,7 @@ setInterval(() => {
 }, 60000);
 
 // Creating Server
-app.post('/compress', cors(corsOptions), (req, res) => {
+app.post('/compress', (req, res) => {
 
     //Setting Headers
     res.setHeader('Content-Type', 'application/json');
@@ -83,11 +90,11 @@ app.post('/compress', cors(corsOptions), (req, res) => {
             });
 
             // Creating Formidable 
-            const form = formidable({ multiples: true, maxFileSize: maxSize });
+            const form = formidable({ multiples: true, maxFileSize: allowedSize });
             await new Promise(resolve => {
                 form.parse(req, async (err, fields, files) => {
 
-                    totalSize = form.bytesReceived;
+                    uploadedSize = form.bytesReceived;
 
                     // Some Form Error
                     if (err) {
@@ -143,13 +150,13 @@ app.post('/compress', cors(corsOptions), (req, res) => {
                     }
 
                     // If Total Images > 10, Send Error.
-                    totalImgs = Object.keys(files.inImgs).length;
-                    if (totalImgs > maxImgs) {
+                    uploadedImgs = Object.keys(files.inImgs).length;
+                    if (uploadedImgs > allowedImgs) {
                         return sendError(res, 400, 'Code05');
                     }
 
                     // Iterating Over All The Images
-                    for (let i = 0; i < totalImgs; i++) {
+                    for (let i = 0; i < uploadedImgs; i++) {
 
                         // Variables
                         let tempImg = files.inImgs[i].path;
@@ -213,7 +220,7 @@ app.post('/compress', cors(corsOptions), (req, res) => {
             });
 
             // Sending Response
-            sendResponse(compValAll, totalImgs, res);
+            sendResponse(compValAll, uploadedImgs, res);
         }
         catch (err) {
             sendError(res, 500, 'Code07');
@@ -224,9 +231,9 @@ app.post('/compress', cors(corsOptions), (req, res) => {
 
 
 // Send Response in JSON
-const sendResponse = async (compValAll, totalImgs, res) => {
+const sendResponse = async (compValAll, uploadedImgs, res) => {
     try {
-        for (let i = 0; i < totalImgs; i++) {
+        for (let i = 0; i < uploadedImgs; i++) {
             let inStats = await new Promise(resolve => {
                 fs.stat(compValAll[i].inImgPath, (err, stats) => {
                     if (err) {
@@ -259,10 +266,10 @@ const sendResponse = async (compValAll, totalImgs, res) => {
             };
         }
         res.end(JSON.stringify({ 
-            maxImgs: `${maxImgs} Image`,
-            totalImgs: `${totalImgs} Image`,
-            maxSize: `${Math.round((maxSize/1048576) * 100) / 100} MB`,
-            totalSize: `${Math.round((totalSize/1048576) * 100) / 100} MB`,
+            allowedImgs: `${allowedImgs} Image`,
+            uploadedImgs: `${uploadedImgs} Image`,
+            allowedSize: `${Math.round((allowedSize/1048576) * 100) / 100} MB`,
+            uploadedSize: `${Math.round((uploadedSize/1048576) * 100) / 100} MB`,
             responseData
         }));
     }
@@ -273,6 +280,7 @@ const sendResponse = async (compValAll, totalImgs, res) => {
 
 // Send Error in JSON
 const sendError = (res, respCode, error) => {
+    console.log(`Error is ${error}`);
     res.status(respCode).end(JSON.stringify({ Error: error }));
 }
 
@@ -284,6 +292,7 @@ const compressJPG = (compVal) => {
             && compVal.stripMeta === 'false'
         ) {
             const compImg = spawn('jpegoptim', [
+                '--force',
                 compVal.inImgPath,
                 '--dest=' + compVal.outChildFolder
             ]);
@@ -295,6 +304,7 @@ const compressJPG = (compVal) => {
             compVal.stripMeta === 'true'
         ) {
             const compImg = spawn('jpegoptim', [
+                '--force',
                 '--strip-all',
                 compVal.inImgPath,
                 '--dest=' + compVal.outChildFolder
@@ -308,7 +318,8 @@ const compressJPG = (compVal) => {
             compVal.imgQuality === 'default'
         ) {
             const compImg = spawn('jpegoptim', [
-                '-m85',
+                '--force',
+                '--max=85',
                 compVal.inImgPath,
                 '--dest=' + compVal.outChildFolder
             ]);
@@ -321,7 +332,8 @@ const compressJPG = (compVal) => {
             compVal.imgQuality !== 'default'
         ) {
             const compImg = spawn('jpegoptim', [
-                '-m' + compVal.imgQuality,
+                '--force',
+                '--max=' + compVal.imgQuality,
                 compVal.inImgPath,
                 '--dest=' + compVal.outChildFolder
             ]);
@@ -334,7 +346,8 @@ const compressJPG = (compVal) => {
             compVal.imgQuality === 'default'
         ) {
             const compImg = spawn('jpegoptim', [
-                '-m85',
+                '--force',
+                '--max=85',
                 '--strip-all',
                 compVal.inImgPath,
                 '--dest=' + compVal.outChildFolder
@@ -348,7 +361,8 @@ const compressJPG = (compVal) => {
             compVal.imgQuality !== 'default'
         ) {
             const compImg = spawn('jpegoptim', [
-                '-m' + compVal.imgQuality,
+                '--force',
+                '--max=' + compVal.imgQuality,
                 '--strip-all',
                 compVal.inImgPath,
                 '--dest=' + compVal.outChildFolder
@@ -371,6 +385,7 @@ const compressPNG = (compVal) => {
             compVal.stripMeta === 'false'
         ) {
             const compImg = spawn('optipng', [
+                '-force',
                 '-o2', compVal.inImgPath,
                 '-out', compVal.outImgPath
             ]);
@@ -382,6 +397,7 @@ const compressPNG = (compVal) => {
             compVal.stripMeta === 'true'
         ) {
             const compImg = spawn('optipng', [
+                '-force',
                 '-o2', compVal.inImgPath,
                 '-strip all',
                 '-out',
@@ -396,7 +412,6 @@ const compressPNG = (compVal) => {
             compVal.imgQuality === 'default'
         ) {
             const compImg = spawn('pngquant', [
-                '--skip-if-larger',
                 '--speed=1',
                 '--quality=1-85',
                 compVal.inImgPath,
@@ -412,7 +427,6 @@ const compressPNG = (compVal) => {
             compVal.imgQuality !== 'default'
         ) {
             const compImg = spawn('pngquant', [
-                '--skip-if-larger',
                 '--speed=1',
                 '--quality=1-' + compVal.imgQuality,
                 compVal.inImgPath, '--out',
@@ -427,7 +441,6 @@ const compressPNG = (compVal) => {
             compVal.imgQuality === 'default'
         ) {
             const compImg = spawn('pngquant', [
-                '--skip-if-larger',
                 '--speed=1',
                 '--strip',
                 '--quality=1-85',
@@ -444,7 +457,6 @@ const compressPNG = (compVal) => {
             compVal.imgQuality !== 'default'
         ) {
             const compImg = spawn('pngquant', [
-                '--skip-if-larger',
                 '--speed=1',
                 '--strip',
                 '--quality=1-' + compVal.imgQuality,
