@@ -12,6 +12,7 @@ const uuid = require('uuid');
 const cors = require('cors');
 const findRemoveSync = require('find-remove');
 
+
 const server = app.listen(3000, () => {
     console.log(`API Server listening at http://localhost/compress`);
 });
@@ -31,6 +32,7 @@ let corsOptions = {
 }
 
 let totalImgs = null;
+let totalSize = null;
 let compVal = {};
 let compValAll = [];
 let responseData = [];
@@ -85,10 +87,12 @@ app.post('/compress', cors(corsOptions), (req, res) => {
             await new Promise(resolve => {
                 form.parse(req, async (err, fields, files) => {
 
+                    totalSize = form.bytesReceived;
+
                     // Some Form Error
                     if (err) {
                         return sendError(res, 500, 'Code03');
-                    } 
+                    }
                     
                     // If Image exists?
                     else if (Object.keys(files).length === 0) {
@@ -255,8 +259,10 @@ const sendResponse = async (compValAll, totalImgs, res) => {
             };
         }
         res.end(JSON.stringify({ 
-            maxImgs: `${maxImgs} Images`,
-            maxSize: `${maxSize/1048576} MB`,
+            maxImgs: `${maxImgs} Image`,
+            totalImgs: `${totalImgs} Image`,
+            maxSize: `${Math.round((maxSize/1048576) * 100) / 100} MB`,
+            totalSize: `${Math.round((totalSize/1048576) * 100) / 100} MB`,
             responseData
         }));
     }
