@@ -4,8 +4,11 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 
-// Routing POST requests on /compress to reqHandCompress
+// Routing POST Requests on /compress to reqHandCompress
 app.post('/compress', cors(), routes.compress);
+
+// Routing All Other Requests to 404 Page
+app.use('/', routes.fourofour);
 
 // Listenting on Port 3001
 const server = app.listen(3001);
