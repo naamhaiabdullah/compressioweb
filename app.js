@@ -1,5 +1,5 @@
 // API dependencies
-const routes = require('./routes');
+const routes = require('./src/routes');
 const express = require('express');
 const app = express();
 const cors = require('cors');
