@@ -127,8 +127,12 @@ http {
 
 ```
 sudo mkdir -p /var/www/api.example.com
+
 sudo chown -R www-data:www-data /var/www/api.example.com
 sudo chmod -R 755 /var/www/api.example.com
+
+sudo chown -R root:root /var/www/api.example.com/src
+sudo chmod -R 755 /var/www/api.example.com/src
 ```
 
 #### Creating Virtual Host
@@ -185,6 +189,6 @@ npm install nodemon -g
 
 #### Run Api Server
 ```
-cd /var/www/api.example.com
+cd /var/www/api.example.com/src
 nodemon app.js
 ```
