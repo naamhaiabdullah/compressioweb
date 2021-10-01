@@ -4,13 +4,10 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 
-// Enabling Cors
-app.use(cors({origin:'https://example.com'}));
+// Routing POST requests on /compress to reqHandCompress
+app.post('/compress', cors(), routes.compress);
 
-// Creating Server
-app.post('/compress', routes.compress);
-
-// Listenting on Port 3001 for Requests
+// Listenting on Port 3001
 const server = app.listen(3001);
 
 // Setting Server Timeout 30 secs

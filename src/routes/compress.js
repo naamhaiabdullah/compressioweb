@@ -15,7 +15,7 @@ setInterval(() => {
 }, 60000);
 
 
-const reqHandlerCompress = (req, res) => {
+const reqHandCompress = (req, res) => {
 
     let inURLTemp = 'https://api.example.com/input/';
     let outURLTemp = 'https://api.example.com/output/';
@@ -206,4 +206,4 @@ const reqHandlerCompress = (req, res) => {
     start();
 };
 
-module.exports = reqHandlerCompress;
+module.exports = reqHandCompress;
