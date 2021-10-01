@@ -43,13 +43,13 @@ const sendResponse = async (compValAll, compDetails, res) => {
                 outImgURL: compValAll[i].outImgURL
             };
         }
-        res.end(JSON.stringify({ 
+        res.json({ 
             allowedImgs: `${allowedImgs} Image`,
             uploadedImgs: `${uploadedImgs} Image`,
             allowedSize: `${Math.round((allowedSize/1048576) * 100) / 100} MB`,
             uploadedSize: `${Math.round((uploadedSize/1048576) * 100) / 100} MB`,
             responseData
-        }));
+        });
     }
     catch (err) {
         sendError(res, 500, 'Code10');
