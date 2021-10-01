@@ -2,7 +2,7 @@
 
 ```
 1. Compressio API is a Open Source production grade Image Compression API.
-2. It's an easy to use single file API with no database and minimal configuration.
+2. It's an easy to use API with no database and minimal configuration.
 3. It compresses JPG, PNG, GIF & SVG images in both Lossy and Lossless formats.
 4. Compressio API Open Source Frontend (React.js) is coming soon.
 5. It can run on Linux, Unix (MacOS) and Windows with Node.js
