@@ -6,26 +6,28 @@ const fs = require("fs");
 const uuid = require('uuid');
 const path = require('path');
 
-// Global Variables
 let inParentFolder = path.join(__dirname, '../../input/');
 let outParentFolder = path.join(__dirname, '../../output/');
 
 // Deleting images older than one hour.
-methods.findRemove(inParentFolder, outParentFolder);
+setInterval(() => {
+    methods.findRemove(inParentFolder, outParentFolder);
+}, 60000);
 
-let inURLTemp = 'https://api.example.com/input/';
-let outURLTemp = 'https://api.example.com/output/';
-
-let uploadedImgs = null;
-let uploadedSize = null;
-let allowedImgs = 10;
-let allowedSize = 50 * 1024 * 1024;
-
-let compVal = {};
-let compValAll = [];
-let responseData = [];
 
 const reqHandlerCompress = (req, res) => {
+
+    let inURLTemp = 'https://api.example.com/input/';
+    let outURLTemp = 'https://api.example.com/output/';
+
+    let uploadedImgs = null;
+    let uploadedSize = null;
+    let allowedImgs = 10;
+    let allowedSize = 50 * 1024 * 1024;
+
+    let compVal = {};
+    let compValAll = [];
+    let responseData = [];
 
     //Setting Headers
     res.setHeader('Content-Type', 'application/json');
