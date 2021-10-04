@@ -1,7 +1,7 @@
 {
-  "name": "imagecompressionapi",
+  "name": "compressioapi",
   "version": "1.0.0",
-  "description": "Image Compressor API compresses JPG, PNG, GIF & SVG images.",
+  "description": "CompressioWeb is a Open Source Production Grade Image Compression API and Web Application.",
   "main": "api/app.js",
   "directories": {
     "doc": "docs"
@@ -11,15 +11,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/twoabd/ImageCompressionAPI.git"
+    "url": "git+https://github.com/twoabd/CompressioWeb.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/twoabd/ImageCompressionAPI/issues"
+    "url": "https://github.com/twoabd/CompressioWeb/issues"
   },
-  "homepage": "https://github.com/twoabd/ImageCompressionAPI#readme",
+  "homepage": "https://github.com/twoabd/CompressioWeb#readme",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.1",

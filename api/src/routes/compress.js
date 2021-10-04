@@ -20,9 +20,6 @@ const reqHandCompress = (req, res) => {
     let inURLTemp = 'https://compressio.app/api/input/';
     let outURLTemp = 'https://compressio.app/api/output/';
 
-    // let inURLTemp = 'http://localhost:3001/input/';
-    // let outURLTemp = 'http://localhost:3001/output/';
-
     let uploadedImgs = null;
     let uploadedSize = null;
     let allowedImgs = 10;

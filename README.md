@@ -14,7 +14,7 @@
 
 #### POST Request, No GET
 ```
-It receives all parameters in a POST request at https://example.com/compress.     
+It receives all parameters in a POST request at https://compressio.app/compress.     
 You can choose maximum 10 images at a time.
 Total image size can't be larger than 50MB.
 Send image with 'inImgs' key through POST request.
@@ -127,21 +127,21 @@ http {
 #### Creating API Directory
 
 ```
-sudo mkdir -p /var/www/example.com/api
-sudo mkdir -p /var/www/example.com/client
+sudo mkdir -p /var/www/compressio.app/api
+sudo mkdir -p /var/www/compressio.app/client
 
-sudo chown -R www-data:www-data /var/www/example.com
-sudo chmod -R 755 /var/www/example.com/ap
+sudo chown -R www-data:www-data /var/www/compressio.app
+sudo chmod -R 755 /var/www/compressio.app/ap
 ```
 
 #### Creating Virtual Host
 ```
-sudo nano /etc/nginx/sites-available/example.com
+sudo nano /etc/nginx/sites-available/compressio.app
 server {
-    server_name example.com;
+    server_name compressio.app;
 
     #  Web Root
-    root /var/www/example.com;
+    root /var/www/compressio.app;
     index index.html index.htm;
    
     # API Folder
@@ -157,21 +157,21 @@ server {
     
     # Input Folder
     location ^~ /api/input {
-        alias /var/www/example.com/api/input;
+        alias /var/www/compressio.app/api/input;
     }
 
 	# Output Folder
     location ^~ /api/output {
-        alias /var/www/example.com/api/output;
+        alias /var/www/compressio.app/api/output;
     }
 
     # Client Folder
     location ^~ / {
-        root /var/www/example.com/client;
+        root /var/www/compressio.app/client;
     }
 
 }
-sudo ln -s /etc/nginx/sites-available/example.com /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/compressio.app /etc/nginx/sites-enabled/
 sudo unlink /etc/nginx/sites-enabled/default
 sudo rm -rf /var/www/html
 sudo systemctl restart nginx
@@ -180,25 +180,25 @@ sudo systemctl restart nginx
 #### Installing SSL
 ```
 sudo apt install certbot python3-certbot-nginx -y
-sudo certbot --nginx -d example.com
+sudo certbot --nginx -d compressio.app
 sudo systemctl status certbot.timer
 sudo certbot renew --dry-run
 sudo systemctl restart nginx
 ```
 
-#### Copy Repo Files to /var/www/example.com
+#### Copy Repo Files to /var/www/compressio.app
 ```
-cd /var/www/example.com/api
+cd /var/www/compressio.app/api
 npm install
 npm install nodemon -g
 
-cd /var/www/example.com/client
+cd /var/www/compressio.app/client
 npm install
 npm run build
 ``` 
 
 #### Run Api Server
 ```
-cd /var/www/example.com/api
+cd /var/www/compressio.app/api
 nodemon app.js
 ```
