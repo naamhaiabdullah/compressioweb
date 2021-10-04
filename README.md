@@ -49,7 +49,19 @@ You can choose not to strip meta with 'stripMeta' key and value 'false' through 
  
 ![alt text](https://github.com/twoabd/CompressioAPI/blob/main/api/docs/lossless.png?raw=true)  
 
-## Installation Documentation (Ubuntu 20.04 LTS)   
+## Installation Documentation (Ubuntu 20.04 LTS) 
+
+#### Change compressio.app to Your Domain Everywhere
+```
+/api/app.js
+/api/src/routes/compress.js
+/client/src/Components/AfterUpload.js
+```
+
+#### Remove Navbar Links From
+```
+/client/src/Components/Navbar.js
+```
 
 #### Install Nginx (Currently v1.18.0) and NodeJs LTS (Currently v14.17.6) on Ubuntu 20.04
 ```
