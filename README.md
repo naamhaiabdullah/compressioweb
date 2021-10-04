@@ -10,7 +10,7 @@
 7. Installation docs for DigitalOcean Ubuntu 20.04 is given below.
 ```
 
-## How to use (API)
+## How To Use API
 
 #### POST Request, No GET
 ```
