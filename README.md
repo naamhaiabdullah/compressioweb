@@ -7,7 +7,7 @@
 4. CompressioWeb is built with Node.js, Express.js and React.js.
 5. Libraries used are JPEGOptim, PNGQuant, OptiPNG, GIFSicle, Scour.
 6. CompressioWeb is fully maintained and will be available in future with all the updates.
-7. Installation docs on DigitalOcean Ubuntu 20.04 is given below.
+7. Installation docs for DigitalOcean Ubuntu 20.04 is given below.
 ```
 
 ## How to use (API)
