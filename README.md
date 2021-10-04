@@ -1,15 +1,16 @@
-## Compressio API &middot; [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+## Compressio API and Web &middot; [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 ```
-1. Compressio API is a Open Source production grade Image Compression API.
-2. It's an easy to use API with no database and minimal configuration.
+1. CompressioWeb is a Open Source Production Grade Image Compression API and Web Application.
+2. It's easy to use and deploy with no database and minimal configuration.
 3. It compresses JPG, PNG, GIF & SVG images in both Lossy and Lossless formats.
-4. Compressio API Open Source Frontend (React.js) is coming soon.
-5. It can run on Linux, Unix (MacOS) and Windows with Node.js
-6. We are working hard to include more features. 
+4. CompressioWeb is built with Node.js, Express.js and React.js.
+5. Libraries used are JPEGOptim, PNGQuant, OptiPNG, GIFSicle, Scour.
+6. CompressioWeb is fully maintained and will be available in future with all the updates.
+7. Installation docs on DigitalOcean Ubuntu 20.04 is given below.
 ```
 
-## How to use   
+## How to use (API)
 
 #### POST Request, No GET
 ```
