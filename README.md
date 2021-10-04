@@ -185,7 +185,7 @@ sudo certbot renew --dry-run
 sudo systemctl restart nginx
 ```
 
-#### Copy Repo Files to /var/www/example.com & Install Dependencies
+#### Copy Files to /var/www/example.com & Install Dependencies
 ```
 cd /var/www/example.com/api
 npm install
