@@ -186,12 +186,16 @@ sudo certbot renew --dry-run
 sudo systemctl restart nginx
 ```
 
-#### Copy Files to /var/www/example.com & Install Dependencies
+#### Copy Repo Files to /var/www/example.com
 ```
 cd /var/www/example.com/api
 npm install
 npm install nodemon -g
-```
+
+cd /var/www/example.com/client
+npm install
+npm run build
+``` 
 
 #### Run Api Server
 ```
