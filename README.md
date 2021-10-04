@@ -129,22 +129,19 @@ http {
 sudo mkdir -p /var/www/example.com/api
 sudo mkdir -p /var/www/example.com/client
 
-sudo chown -R www-data:www-data /var/www/example.com/api
-sudo chmod -R 755 /var/www/example.com/api
-
-sudo chown -R www-data:www-data /var/www/example.com/client
-sudo chmod -R 755 /var/www/example.com/client
+sudo chown -R www-data:www-data /var/www/example.com
+sudo chmod -R 755 /var/www/example.com/ap
 ```
 
 #### Creating Virtual Host
 ```
 sudo nano /etc/nginx/sites-available/example.com
 server {
-    listen 80;
     server_name example.com;
 
     #  Web Root
     root /var/www/example.com;
+    index index.html index.htm;
    
     # API Folder
     location ^~ /api/compress {
@@ -156,27 +153,22 @@ server {
 	    proxy_cache_bypass $http_upgrade;
 	    proxy_read_timeout 30s;
     }
-
-    # Client Folder
-    location ^~ /client {
-	    proxy_pass http://localhost:3000;
-	    proxy_http_version 1.1;
-	    proxy_set_header Upgrade $http_upgrade;
-	    proxy_set_header Connection 'upgrade';
-	    proxy_set_header Host $host;
-	    proxy_cache_bypass $http_upgrade;
-	    proxy_read_timeout 30s;
-    }
     
     # Input Folder
-    location ^~ "/api/input/([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})/.(jpg|jpeg|png|gif|svg)$" {
-        try_files $uri $uri/ =404;
+    location ^~ /api/input {
+        alias /var/www/example.com/api/input;
     }
 
 	# Output Folder
-    location ^~ "/api/output/([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})/.(jpg|jpeg|png|gif|svg)$" {
-        try_files $uri $uri/ =404;
+    location ^~ /api/output {
+        alias /var/www/example.com/api/output;
     }
+
+    # Client Folder
+    location ^~ / {
+        root /var/www/example.com/client;
+    }
+
 }
 sudo ln -s /etc/nginx/sites-available/example.com /etc/nginx/sites-enabled/
 sudo unlink /etc/nginx/sites-enabled/default
