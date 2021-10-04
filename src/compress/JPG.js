@@ -90,7 +90,7 @@ const JPG = (compVal) => {
         }
     }
     catch (err) {
-        return sendError(compVal.res, 500, 'Code11');
+        return sendError(compVal.res, 500, 'Code11, Compressing JPG Failed!');
     }
 };
 

@@ -112,7 +112,7 @@ const SVG = (compVal) => {
         }
     }
     catch (err) {
-        return sendError(compVal.res, 500, 'Code14');
+        return sendError(compVal.res, 500, 'Code14, , Compressing SVG Failed!');
     }
 };
 

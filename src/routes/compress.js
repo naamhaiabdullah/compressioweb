@@ -17,8 +17,11 @@ setInterval(() => {
 
 const reqHandCompress = (req, res) => {
 
-    let inURLTemp = 'https://api.example.com/input/';
-    let outURLTemp = 'https://api.example.com/output/';
+    let inURLTemp = 'https://compressio.app/api/input/';
+    let outURLTemp = 'https://compressio.app/api/output/';
+
+    // let inURLTemp = 'http://localhost:3001/input/';
+    // let outURLTemp = 'http://localhost:3001/output/';
 
     let uploadedImgs = null;
     let uploadedSize = null;
@@ -47,14 +50,14 @@ const reqHandCompress = (req, res) => {
             await new Promise(resolve => {
                 fs.mkdir(inChildFolder, { recursive: true }, (err) => {
                     if (err) {
-                        return methods.sendError(res, 500, 'Code01');
+                        return methods.sendError(res, 500, 'Code01, Something Went Wrong!');
                     } else { resolve(); }
                 })
             });
             await new Promise(resolve => {
                 fs.mkdir(outChildFolder, { recursive: true }, (err) => {
                     if (err) {
-                        return methods.sendError(res, 500, 'Code02');
+                        return methods.sendError(res, 500, 'Code02, Something Went Wrong!');
                     } else { resolve(); }
                 })
             });
@@ -68,14 +71,14 @@ const reqHandCompress = (req, res) => {
 
                     // Some Form Error
                     if (err) {
-                        return methods.sendError(res, 500, 'Code03');
+                        return methods.sendError(res, 500, 'Code03, Something Went Wrong!');
                     }
 
                     // If Image exists?
                     else if (Object.keys(files).length === 0) {
-                        return methods.sendError(res, 400, 'Code04');
+                        return methods.sendError(res, 400, 'Code04, No Image Provided!');
                     } else if (files.inImgs.size === 0) {
-                        return methods.sendError(res, 400, 'Code04');
+                        return methods.sendError(res, 400, 'Code04, No Image Provided!');
                     }
 
                     // If Single Image, Convert Object to Array.
@@ -122,7 +125,7 @@ const reqHandCompress = (req, res) => {
                     // If Total Images > 10, Send Error.
                     uploadedImgs = Object.keys(files.inImgs).length;
                     if (uploadedImgs > allowedImgs) {
-                        return methods.sendError(res, 400, 'Code05');
+                        return methods.sendError(res, 400, 'Code05, Images More Than 10!');
                     }
 
                     // Iterating Over All The Images
@@ -161,7 +164,7 @@ const reqHandCompress = (req, res) => {
                         // Moving Images from Temp to Input Folder
                         await new Promise(resolve => {
                             fs.rename(tempImg, inImgPath, (err) => {
-                                if (err) { return methods.sendError(res, 500, 'Code06'); }
+                                if (err) { return methods.sendError(res, 500, 'Code06, Something Went Wrong!'); }
                                 else { resolve(); }
                             })
                         });
@@ -200,7 +203,7 @@ const reqHandCompress = (req, res) => {
             methods.sendResponse(compValAll, compDetails, res);
         }
         catch (err) {
-            methods.sendError(res, 500, 'Code07');
+            methods.sendError(res, 500, 'Code07, Something Went Wrong!');
         }
     };
     start();

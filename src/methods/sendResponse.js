@@ -15,7 +15,7 @@ const sendResponse = async (compValAll, compDetails, res) => {
             let inStats = await new Promise(resolve => {
                 fs.stat(compValAll[i].inImgPath, (err, stats) => {
                     if (err) {
-                        return methods.sendError(res, 500, 'Code08');
+                        return sendError(res, 500, 'Code08, Something Went Wrong!');
                     } else { resolve(stats); }
                 })
             });
@@ -25,7 +25,7 @@ const sendResponse = async (compValAll, compDetails, res) => {
             let outStats = await new Promise(resolve => {
                 fs.stat(compValAll[i].outImgPath, (err, stats) => {
                     if (err) {
-                        return methods.sendError(res, 500, 'Code09');
+                        return sendError(res, 500, 'Code09, Something Went Wrong!');
                     } else { resolve(stats); }
                 })
             });
@@ -52,7 +52,7 @@ const sendResponse = async (compValAll, compDetails, res) => {
         });
     }
     catch (err) {
-        sendError(res, 500, 'Code10');
+        sendError(res, 500, 'Code10, Something Went Wrong!');
     }
 }
 

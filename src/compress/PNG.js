@@ -93,7 +93,7 @@ const PNG = (compVal) => {
         }
     }
     catch (err) {
-        return sendError(compVal.res, 500, 'Code12');
+        return sendError(compVal.res, 500, 'Code12, Compressing PNG Failed!');
     }
 };
 

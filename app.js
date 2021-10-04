@@ -4,10 +4,13 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 
-// Routing POST Requests on /compress to reqHandCompress
-app.post('/compress', cors(), routes.compress);
+// Enabling CORs
+app.use(cors({origin: 'https://compressio.app' }));
 
-// Routing All Other Requests to 404 Page
+// Routing POST Requests on /compress to reqHandCompress
+app.post('/compress', routes.compress);
+
+// Routing All Other Requests to 404 Route
 app.use('/', routes.fourofour);
 
 // Listenting on Port 3001

@@ -92,7 +92,7 @@ const GIF = (compVal) => {
         }
     }
     catch (err) {
-        return sendError(compVal.res, 500, 'Code13');
+        return sendError(compVal.res, 500, 'Code13, Compressing GIF Failed!');
     }
 };
 
