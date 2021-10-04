@@ -13,7 +13,7 @@
 
 #### POST Request, No GET
 ```
-It receives all parameters in a POST request at https://example.com/api.     
+It receives all parameters in a POST request at https://example.com/compress.     
 You can choose maximum 10 images at a time.
 Total image size can't be larger than 50MB.
 Send image with 'inImgs' key through POST request.
@@ -123,16 +123,17 @@ http {
 }
 ```
 
-#### Creating API Directory with Necessary Permission
+#### Creating API Directory
 
 ```
 sudo mkdir -p /var/www/example.com/api
+sudo mkdir -p /var/www/example.com/client
 
 sudo chown -R www-data:www-data /var/www/example.com/api
 sudo chmod -R 755 /var/www/example.com/api
 
-sudo chown -R root:root /var/www/example.com/api/src
-sudo chmod -R 755 /var/www/example.com/api/src
+sudo chown -R www-data:www-data /var/www/example.com/client
+sudo chmod -R 755 /var/www/example.com/client
 ```
 
 #### Creating Virtual Host
@@ -146,7 +147,18 @@ server {
     root /var/www/example.com;
    
     # API Folder
-    location ^~ /api {
+    location ^~ /api/compress {
+	    proxy_pass http://localhost:3001/compress;
+	    proxy_http_version 1.1;
+	    proxy_set_header Upgrade $http_upgrade;
+	    proxy_set_header Connection 'upgrade';
+	    proxy_set_header Host $host;
+	    proxy_cache_bypass $http_upgrade;
+	    proxy_read_timeout 30s;
+    }
+
+    # Client Folder
+    location ^~ /client {
 	    proxy_pass http://localhost:3000;
 	    proxy_http_version 1.1;
 	    proxy_set_header Upgrade $http_upgrade;
@@ -157,17 +169,18 @@ server {
     }
     
     # Input Folder
-    location ^~ "/input/([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})/.(jpg|jpeg|png|gif|svg)$" {
+    location ^~ "/api/input/([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})/.(jpg|jpeg|png|gif|svg)$" {
         try_files $uri $uri/ =404;
     }
 
 	# Output Folder
-    location ^~ "/output/([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})/.(jpg|jpeg|png|gif|svg)$" {
+    location ^~ "/api/output/([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})/.(jpg|jpeg|png|gif|svg)$" {
         try_files $uri $uri/ =404;
     }
 }
 sudo ln -s /etc/nginx/sites-available/example.com /etc/nginx/sites-enabled/
 sudo unlink /etc/nginx/sites-enabled/default
+sudo rm -rf /var/www/html
 sudo systemctl restart nginx
 ```
 
@@ -189,6 +202,6 @@ npm install nodemon -g
 
 #### Run Api Server
 ```
-cd /var/www/api.example.com/api
+cd /var/www/example.com/api
 nodemon app.js
 ```
