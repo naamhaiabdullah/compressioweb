@@ -189,7 +189,7 @@ export const AfterUpload = () => {
                         onClick={() => dispatch({ type: 'delete-all' })} className='again'>
                         Compress Again
                     </button>
-                    <button onClick={downloadImages} className='download'>
+                    <button onClick={downloadImages} style={{ marginTop: '20px', paddingLeft: '21.5px', paddingRight: '21.5px' }} className='download'>
                         <i style={{ marginRight: 4 }} className='fas fa-cloud-download-alt'></i>
                         Download All
                     </button>
