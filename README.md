@@ -51,8 +51,6 @@ You can choose not to strip meta with 'stripMeta' key and value 'false' through 
  
 ![alt text](https://github.com/twoabd/CompressioAPI/blob/main/api/docs/website/third.png?raw=true)  
 
-![alt text](https://github.com/twoabd/CompressioAPI/blob/main/api/docs/website/fourth.png?raw=true) 
-
 ## Demo API
 
 ![alt text](https://github.com/twoabd/CompressioAPI/blob/main/api/docs/api/default.png?raw=true)  
