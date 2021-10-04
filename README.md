@@ -43,7 +43,7 @@ By Default image metadata will be stripped.
 You can choose not to strip meta with 'stripMeta' key and value 'false' through POST request.
 ```
 
-#### Images (Website)
+## Images (Website)
 
 ![alt text](https://github.com/twoabd/CompressioAPI/blob/main/api/docs/website/first.png?raw=true)  
 
@@ -53,7 +53,7 @@ You can choose not to strip meta with 'stripMeta' key and value 'false' through 
 
 ![alt text](https://github.com/twoabd/CompressioAPI/blob/main/api/docs/website/fourth.png?raw=true) 
 
-#### Images (API)
+## Images (API)
 
 ![alt text](https://github.com/twoabd/CompressioAPI/blob/main/api/docs/api/default.png?raw=true)  
 
