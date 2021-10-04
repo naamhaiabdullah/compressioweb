@@ -43,11 +43,11 @@ By Default image metadata will be stripped.
 You can choose not to strip meta with 'stripMeta' key and value 'false' through POST request.
 ```
 
-![alt text](https://github.com/twoabd/CompressioAPI/blob/main/docs/default.png?raw=true)  
+![alt text](https://github.com/twoabd/CompressioAPI/blob/main/api/docs/default.png?raw=true)  
 
-![alt text](https://github.com/twoabd/CompressioAPI/blob/main/docs/lossy.png?raw=true)  
+![alt text](https://github.com/twoabd/CompressioAPI/blob/main/api/docs/lossy.png?raw=true)  
  
-![alt text](https://github.com/twoabd/CompressioAPI/blob/main/docs/lossless.png?raw=true)  
+![alt text](https://github.com/twoabd/CompressioAPI/blob/main/api/docs/lossless.png?raw=true)  
 
 ## Installation Documentation (Ubuntu 20.04 LTS)   
 
