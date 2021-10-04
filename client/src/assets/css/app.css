@@ -1,0 +1,30 @@
+.App{
+    width:65%;
+    margin: 0 auto;
+}
+
+
+@media only screen and (max-width: 576px) {
+    .App {
+        width: 85%;
+        margin: 0 auto;
+    }
+}
+@media only screen and (min-width:577px) and (max-width: 768px) {
+    .App {
+        width: 80%;
+        margin: 0 auto;
+    }
+}
+@media only screen and (min-width:769px) and (max-width: 992px) {
+    .App {
+        width: 75%;
+        margin: 0 auto;
+    }
+}
+@media only screen and (min-width:993px) and (max-width: 1200px) {
+    .App {
+        width: 70%;
+        margin: 0 auto;
+    }
+}

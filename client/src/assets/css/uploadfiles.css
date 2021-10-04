@@ -1,0 +1,64 @@
+.logo{
+    width: 130px;
+    height: auto;
+    opacity: .5;
+}
+.line{
+    width: 12vw;
+    height: 2px;
+    opacity: .1;
+    background-color: #1f2937;
+}
+
+.browseBtn {
+    font-weight: 600;
+    font-size: .9rem;
+    margin-left: 6px;
+}
+
+.uploadButton{
+    background-color: #8b5cf6;
+    border: none;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-radius:6px;
+    color: white;
+    font-weight: 600;
+    padding: 0.5rem 1.2rem;
+}
+.uploadButton:hover{
+    background-color: #8251f7;
+}
+.buttonContainer{
+    display: flex;
+}
+.orText{
+    color: #1f2937;
+    font-size: medium;
+    margin: 0 1rem;
+    font-size: 1rem;
+}
+.uploadText{
+    color:#1f2937;
+    font-size: 1.5rem;
+}
+.or{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* width: ; */
+}
+.uploadFiles{
+    display: flex;
+    min-height: 20rem;
+    height:fit-content;
+    padding: 5rem 0;
+    background-color: #f1f5f9;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+    margin: 3rem 0rem 1.5rem 0rem;
+    border: 2px #1f2937 dashed;
+    border-color: #cbd5e1;
+    border-radius: 5px;
+}

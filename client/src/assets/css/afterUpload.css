@@ -1,0 +1,101 @@
+.browseBtn {
+    font-weight: 600;
+    font-size: .9rem;
+}
+
+
+.afterCompress button{
+    font-size: 0.9rem;
+    padding: 0.5rem 1.2rem;
+    background-color: #8B5CF6;
+    color: white;
+    border: none;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.afterCompress .again{
+    background-color: #8B5CF6;
+    color: white;
+    margin-right: 3rem;
+}
+
+.again:hover, .download:hover{
+    background-color: #8251f7;
+}
+
+.AfterUpload{
+    min-height: 20rem;
+    height: fit-content;
+    position: relative;
+    padding: 5rem 0;
+    margin: 0rem;
+    border-radius: 5px;
+}
+
+.allFiles{
+    width: 100%;
+}
+
+.fileName{
+    font-size: .9rem;
+    color: #1f2937;
+}
+
+.fileSize{
+    font-size: 0.8rem;
+    color: #1f2937;
+    opacity: 0.4;
+}
+
+.fileContainer{
+    /* display: flex; */
+    width: 100%;
+    /* justify-content: space-between; */
+}
+
+.previewImage{
+    display: none;
+    object-fit: contain;
+    object-position: center;
+    height: 50px;
+    width:150px;
+}
+.fileLine{
+    height: 4px;
+    width: 100%;
+    opacity: 1;
+    border-radius: 5px;
+    background-color: #e2e8f0;
+}
+
+  .loader {
+    height: 4px;
+    width: 100%;
+    opacity: 1;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    z-index: 100000;
+  }
+  
+  .loader__element {
+      height: 4px;
+      width: 100%;
+      background: #A5D6A7;
+  
+  }
+  
+  .loader__element:before {
+      content: '';
+      display: block;
+      border-radius: 5px;
+      background-color: #4CAF50;
+      height: 4px;
+      width: 0;
+      animation: getWidth 3s ease-in infinite;
+  }
+  
+  @keyframes getWidth {
+      100% { width: 100%; }
+  }
