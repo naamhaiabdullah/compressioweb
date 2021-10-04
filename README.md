@@ -13,7 +13,7 @@
 
 #### POST Request, No GET
 ```
-It receives all parameters in a POST request at https://api.example.com/compress.     
+It receives all parameters in a POST request at https://example.com/api.     
 You can choose maximum 10 images at a time.
 Total image size can't be larger than 50MB.
 Send image with 'inImgs' key through POST request.
@@ -126,27 +126,27 @@ http {
 #### Creating API Directory with Necessary Permission
 
 ```
-sudo mkdir -p /var/www/api.example.com
+sudo mkdir -p /var/www/example.com/api
 
-sudo chown -R www-data:www-data /var/www/api.example.com
-sudo chmod -R 755 /var/www/api.example.com
+sudo chown -R www-data:www-data /var/www/example.com/api
+sudo chmod -R 755 /var/www/example.com/api
 
-sudo chown -R root:root /var/www/api.example.com/src
-sudo chmod -R 755 /var/www/api.example.com/src
+sudo chown -R root:root /var/www/example.com/api/src
+sudo chmod -R 755 /var/www/example.com/api/src
 ```
 
 #### Creating Virtual Host
 ```
-sudo nano /etc/nginx/sites-available/api.example.com
+sudo nano /etc/nginx/sites-available/example.com
 server {
     listen 80;
-    server_name api.example.com;
+    server_name example.com;
 
     #  Web Root
-    root /var/www/api.example.com;
+    root /var/www/example.com;
    
     # API Folder
-    location ^~ /compress {
+    location ^~ /api {
 	    proxy_pass http://localhost:3000;
 	    proxy_http_version 1.1;
 	    proxy_set_header Upgrade $http_upgrade;
@@ -166,7 +166,7 @@ server {
         try_files $uri $uri/ =404;
     }
 }
-sudo ln -s /etc/nginx/sites-available/api.example.com /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/example.com /etc/nginx/sites-enabled/
 sudo unlink /etc/nginx/sites-enabled/default
 sudo systemctl restart nginx
 ```
@@ -174,21 +174,21 @@ sudo systemctl restart nginx
 #### Installing SSL
 ```
 sudo apt install certbot python3-certbot-nginx -y
-sudo certbot --nginx -d api.example.com
+sudo certbot --nginx -d example.com
 sudo systemctl status certbot.timer
 sudo certbot renew --dry-run
 sudo systemctl restart nginx
 ```
 
-#### Copy Repo Files to /var/www/api.example.com & Install Dependencies
+#### Copy Repo Files to /var/www/example.com & Install Dependencies
 ```
-cd /var/www/api.example.com
+cd /var/www/example.com/api
 npm install
 npm install nodemon -g
 ```
 
 #### Run Api Server
 ```
-cd /var/www/api.example.com/src
+cd /var/www/api.example.com/api
 nodemon app.js
 ```
