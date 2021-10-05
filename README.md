@@ -10,6 +10,28 @@
 7. Installation docs for DigitalOcean Ubuntu 20.04 is given below.
 ```
 
+## Built With
+
+* [Node.js](https://nodejs.org) - Backend
+* [Express.js](https://expressjs.com) - Backend Framework
+* [React.js](https://reactjs.org/) - Frontend Library
+
+## Authors
+
+* **Choudhary Abdullah** - API and Frontend - [LinkedIn](https://www.linkedin.com/in/abdullahchoudhary/)
+* **Fahad Ahmad** - Frontend - [LinkedIn](https://www.linkedin.com/in/fahad-ahmad-b042a7112/)   
+
+## Screenshots
+
+![alt text](https://github.com/twoabd/CompressioAPI/blob/main/api/docs/website/first.png?raw=true)   
+
+![alt text](https://github.com/twoabd/CompressioAPI/blob/main/api/docs/api/default.png?raw=true)  
+
+![alt text](https://github.com/twoabd/CompressioAPI/blob/main/api/docs/api/lossy.png?raw=true)  
+ 
+![alt text](https://github.com/twoabd/CompressioAPI/blob/main/api/docs/api/lossless.png?raw=true) 
+
+
 ## How to Use API
 
 #### POST Request, No GET
@@ -43,32 +65,10 @@ By Default image metadata will be stripped.
 You can choose not to strip meta with 'stripMeta' key and value 'false' through POST request.
 ```
 
-## Built With
-
-* [Node.js](https://nodejs.org) - Backend
-* [Express.js](https://expressjs.com) - Backend Framework
-* [React.js](https://reactjs.org/) - Frontend Library
-
-## Authors
-
-* **Choudhary Abdullah** - API and Frontend - [LinkedIn](https://www.linkedin.com/in/abdullahchoudhary/)
-* **Fahad Ahmad** - Frontend - [LinkedIn](https://www.linkedin.com/in/fahad-ahmad-b042a7112/)   
-
-
-
-## Screenshots
-
-![alt text](https://github.com/twoabd/CompressioAPI/blob/main/api/docs/website/first.png?raw=true)   
-
-![alt text](https://github.com/twoabd/CompressioAPI/blob/main/api/docs/api/default.png?raw=true)  
-
-![alt text](https://github.com/twoabd/CompressioAPI/blob/main/api/docs/api/lossy.png?raw=true)  
- 
-![alt text](https://github.com/twoabd/CompressioAPI/blob/main/api/docs/api/lossless.png?raw=true)  
-
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/twoabd/CompressioWeb/tags). 
+
 
 ## Deployment (DigitalOcean Ubuntu 20.04 LTS) 
 
