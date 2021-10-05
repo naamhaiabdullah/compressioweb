@@ -55,6 +55,12 @@ You can choose not to strip meta with 'stripMeta' key and value 'false' through 
  
 ![alt text](https://github.com/twoabd/CompressioAPI/blob/main/api/docs/api/lossless.png?raw=true)  
 
+## Built With
+
+* [Node.js](https://nodejs.org) - Backend
+* [Express.js](https://expressjs.com) - Backend Framework
+* [React.js](https://reactjs.org/) - Frontend Library
+
 ## Installation Documentation (Ubuntu 20.04 LTS) 
 
 #### Change compressio.app to Your Domain Everywhere
