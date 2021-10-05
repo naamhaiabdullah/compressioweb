@@ -61,7 +61,11 @@ You can choose not to strip meta with 'stripMeta' key and value 'false' through 
 * [Express.js](https://expressjs.com) - Backend Framework
 * [React.js](https://reactjs.org/) - Frontend Library
 
-## Installation Documentation (Ubuntu 20.04 LTS) 
+## Versioning
+
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/twoabd/CompressioWeb/tags). 
+
+## Deployment (DigitalOcean Ubuntu 20.04 LTS) 
 
 #### Change compressio.app to Your Domain Everywhere
 ```
