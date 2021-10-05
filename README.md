@@ -75,9 +75,9 @@ You can choose not to strip meta with 'stripMeta' key and value 'false' through 
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/twoabd/CompressioWeb/tags). 
 
 
-## Deployment
+## Deployment, API & Web
 
-#### Change compressio.app to Your Domain Everywhere
+#### Change compressio.app to Your Domain At
 ```
 /api/app.js
 /api/src/routes/compress.js
@@ -245,4 +245,4 @@ nodemon app.js
 ## Acknowledgments
 
 * Frontend is inspired from [Caesium Image Compressor](https://caesium.app)
-* Learnt about all the four compression libraries from [Compressor.io](https://compressor.io/) when it was free.
+* Learnt about all the five compression libraries from [Compressor.io](https://compressor.io/) when it was free.
