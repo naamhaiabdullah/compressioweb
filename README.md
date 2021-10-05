@@ -65,6 +65,11 @@ You can choose not to strip meta with 'stripMeta' key and value 'false' through 
 
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/twoabd/CompressioWeb/tags). 
 
+## Authors
+
+* **Choudhary Abdullah** - API and Frontend - [LinkedIn](https://www.linkedin.com/in/abdullahchoudhary/)
+* **Fahad Ahmad** - Frontend - [LinkedIn](https://www.linkedin.com/in/fahad-ahmad-b042a7112/)
+
 ## Deployment (DigitalOcean Ubuntu 20.04 LTS) 
 
 #### Change compressio.app to Your Domain Everywhere
