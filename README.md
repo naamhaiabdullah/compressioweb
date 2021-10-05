@@ -52,13 +52,13 @@ You can choose not to strip meta with 'stripMeta' key and value 'false' through 
 ## Authors
 
 * **Choudhary Abdullah** - API and Frontend - [LinkedIn](https://www.linkedin.com/in/abdullahchoudhary/)
-* **Fahad Ahmad** - Frontend - [LinkedIn](https://www.linkedin.com/in/fahad-ahmad-b042a7112/)
+* **Fahad Ahmad** - Frontend - [LinkedIn](https://www.linkedin.com/in/fahad-ahmad-b042a7112/)   
 
-## Website Screenshots
+
+
+## Screenshots
 
 ![alt text](https://github.com/twoabd/CompressioAPI/blob/main/api/docs/website/first.png?raw=true)   
-
-## API Screenshots
 
 ![alt text](https://github.com/twoabd/CompressioAPI/blob/main/api/docs/api/default.png?raw=true)  
 
