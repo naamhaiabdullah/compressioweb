@@ -15,6 +15,11 @@
 * [Node.js](https://nodejs.org) - Backend
 * [Express.js](https://expressjs.com) - Backend Framework
 * [React.js](https://reactjs.org/) - Frontend Library
+* [PNGQuant](https://pngquant.org/) - PNG Compression Library
+* [OptiPNG](http://optipng.sourceforge.net/) - PNG Compression Library
+* [JPEGOptim](https://www.mankier.com/1/jpegoptim) - JPEG Compression Library
+* [GIFSicle](https://www.lcdf.org/gifsicle/) - GIF Compression Library
+* [Scour](https://www.codedread.com/scour/) - SVG Compression Library
 
 ## Authors
 
