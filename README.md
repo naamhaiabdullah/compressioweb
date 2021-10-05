@@ -241,3 +241,7 @@ And delete everything else inside /var/www/compressio.app/client/
 cd /var/www/compressio.app/api
 nodemon app.js
 ```
+
+## Acknowledgments
+
+* Frontend is inspired from https://caesium.app
