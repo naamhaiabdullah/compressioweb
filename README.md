@@ -160,14 +160,12 @@ sudo chmod -R 755 /var/www/compressio.app/ap
 ```
 sudo nano /etc/nginx/sites-available/compressio.app
 server {
-    server_name compressio.app;
 
-    #  Web Root
-    root /var/www/compressio.app;
-    index index.html index.htm;
+    server_name compressio.app;
+    index index.html;
    
     # API Folder
-    location ^~ /api/compress {
+    location /api/compress {
 	    proxy_pass http://localhost:3001/compress;
 	    proxy_http_version 1.1;
 	    proxy_set_header Upgrade $http_upgrade;
@@ -178,17 +176,17 @@ server {
     }
     
     # Input Folder
-    location ^~ /api/input {
-        alias /var/www/compressio.app/api/input;
+    location /api/input {
+        root /var/www/compressio.app;
     }
 
 	# Output Folder
-    location ^~ /api/output {
-        alias /var/www/compressio.app/api/output;
+    location /api/output {
+        root /var/www/compressio.app;
     }
 
     # Client Folder
-    location ^~ / {
+    location / {
         root /var/www/compressio.app/client;
     }
 
