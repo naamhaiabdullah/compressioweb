@@ -245,4 +245,4 @@ nodemon app.js
 ## Acknowledgments
 
 * Frontend is inspired from [Caesium Image Compressor](https://caesium.app)
-* Learnt about all the four compression libraries from compressio.io's about page when it was free.
+* Learnt about all the four compression libraries from [Compressor.io](https://compressor.io/) when it was free.
