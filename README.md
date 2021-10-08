@@ -135,7 +135,7 @@ http {
 	tcp_nodelay on;
 	keepalive_timeout 65;
 	types_hash_max_size 2048;
-    client_max_body_size 20M;
+        client_max_body_size 20M;
 
 	proxy_cache_path  /data/nginx/cache levels=1:2 
 	keys_zone=STATIC:10m inactive=24h  max_size=1g;
@@ -201,13 +201,13 @@ server {
    
     # API Folder
     location /api/compress {
-	    proxy_pass http://localhost:3001/compress;
-	    proxy_http_version 1.1;
-	    proxy_set_header Upgrade $http_upgrade;
-	    proxy_set_header Connection 'upgrade';
-	    proxy_set_header Host $host;
-	    proxy_cache_bypass $http_upgrade;
-	    proxy_read_timeout 30s;
+        proxy_pass http://localhost:3001/compress;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_read_timeout 30s;
     }
     
     # Input Folder
