@@ -179,10 +179,16 @@ http {
 ```
 sudo mkdir -p /var/www/compressio.app/api
 sudo mkdir -p /var/www/compressio.app/client
-sudo mkdir -p /var/www/compressio.app/cache
 
 sudo chown -R www-data:www-data /var/www/compressio.app
 sudo chmod -R 755 /var/www/compressio.app/app
+```
+
+#### Creating 404 Page
+
+```
+sudo nano /var/www/compressio.app/client/404.html
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Not Found - Compressio App</title><link rel="shortcut icon" href="/favicon.png" type="image/png"><link rel="dns-prefetch" href="//fonts.gstatic.com"><link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet"><style>body,html{background-color:#fff;color:#636b6f;font-family:Nunito,sans-serif;font-weight:100;height:100vh;margin:0}.full-height{height:100vh}.flex-center{align-items:center;display:flex;justify-content:center}.position-ref{position:relative}.code{border-right:2px solid;font-size:26px;padding:0 15px 0 15px;text-align:center}.message{font-size:18px;text-align:center}</style></head><body><div class="flex-center position-ref full-height"><div class="code">404</div><div class="message" style="padding:10px">Not Found</div></div></body></html>
 ```
 
 #### Creating Virtual Host
@@ -217,6 +223,7 @@ server {
     # Client Folder
     location / {
 		expires 1d;
+		error_page 404 /404.html;
         root /var/www/compressio.app/client;
     }
 
