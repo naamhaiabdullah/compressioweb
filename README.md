@@ -162,7 +162,7 @@ http {
 	gzip_comp_level 6;
 	gzip_buffers 16 8k;
 	gzip_http_version 1.1;
-    gzip_types 
+        gzip_types 
 	application/javascript application/rss+xml application/vnd.ms-fontobject application/x-font 
 	application/x-font-opentype application/x-font-otf application/x-font-truetype application/x-font-ttf 
 	application/x-javascript application/xhtml+xml application/xml font/opentype font/otf font/ttf 
@@ -216,7 +216,7 @@ server {
 
     # Client Folder
     location / {
-		expires 1d;
+	expires 1d;
         root /var/www/compressio.app/client;
     }
 
