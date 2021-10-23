@@ -137,9 +137,6 @@ http {
 	types_hash_max_size 2048;
         client_max_body_size 20M;
 
-	proxy_cache_path  /data/nginx/cache levels=1:2 
-	keys_zone=STATIC:10m inactive=24h  max_size=1g;
-
 	include /etc/nginx/mime.types;
 	default_type application/octet-stream;
 
@@ -167,7 +164,6 @@ http {
 	application/x-font-opentype application/x-font-otf application/x-font-truetype application/x-font-ttf 
 	application/x-javascript application/xhtml+xml application/xml font/opentype font/otf font/ttf 
 	image/svg+xml image/x-icon text/css text/html text/javascript text/plain text/xml;
-
 
 	include /etc/nginx/conf.d/*.conf;
 	include /etc/nginx/sites-enabled/*;
@@ -222,9 +218,9 @@ server {
 
     # Client Folder
     location / {
-		expires 1d;
-		error_page 404 /404.html;
-		root /var/www/compressio.app/client;
+        expires 1d;
+        error_page 404 /404.html;
+        root /var/www/compressio.app/client;
     }
 
 }
