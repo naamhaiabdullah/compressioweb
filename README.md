@@ -2,7 +2,7 @@
 
 ```
 1. CompressioWeb is a Open Source Production Grade Image Compression API and Web Application.
-2. It's easy to use and deploy with no database and minimal configuration.
+2. Privacy friendly, no database, no analytics, no logs, no cookies and auto image deletion in an hour after upload.
 3. It compresses JPG, PNG, GIF & SVG images in both Lossy and Lossless formats.
 4. CompressioWeb is built with Node.js, Express.js and React.js.
 5. Libraries used are JPEGOptim, PNGQuant, OptiPNG, GIFSicle, Scour.
