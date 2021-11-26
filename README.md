@@ -1,7 +1,7 @@
 ## CompressioWeb &middot; [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 ```
-1. CompressioWeb is a Open Source Production Grade Image Compression API and Web Application.
+1. CompressioWeb is an Open Source Production Grade Image Compression API and Web Application.
 2. Privacy friendly, no database, no analytics, no logs, no cookies and auto image deletion in an hour after upload.
 3. It compresses JPG, PNG, GIF & SVG images in both Lossy and Lossless formats.
 4. CompressioWeb is built with Node.js, Express.js and React.js.
