@@ -256,7 +256,7 @@ And delete everything else inside /var/www/compressio.app/client/
 #### Run Api Server
 ```
 cd /var/www/compressio.app/api
-pm2 start app.js -n CompressioAP
+pm2 start app.js -n CompressioAPI
 ```
 
 ## Acknowledgments
