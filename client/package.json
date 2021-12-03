@@ -1,7 +1,5 @@
 {
   "name": "compressioclient",
-  "version": "1.0.0",
-  "private": true,
   "dependencies": {
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
