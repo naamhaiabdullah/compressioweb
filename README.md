@@ -243,7 +243,6 @@ sudo systemctl restart nginx
 ```
 cd /var/www/compressio.app/api
 npm install
-npm install nodemon -g
 
 cd /var/www/compressio.app/client
 npm install
