@@ -1,6 +1,5 @@
 {
   "name": "compressioapi",
-  "version": "1.0.0",
   "description": "CompressioWeb is a Open Source Production Grade Image Compression API and Web Application.",
   "main": "api/app.js",
   "directories": {
