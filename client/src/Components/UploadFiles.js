@@ -6,15 +6,15 @@ import { ImageContext } from '../context/ImageContext';
 
 export const UploadFiles = () => {
 
-    const { data, dispatch } = useContext(ImageContext);
+	const { data, dispatch } = useContext(ImageContext);
 
-    const onDrop = useCallback(Uploadedfiles => {
-        if (Uploadedfiles.length > 0 && Uploadedfiles.length <11) {
-            dispatch({ type: 'add-file', payload: Uploadedfiles });
-        }
-    }, [dispatch]);
-    const { getRootProps, getInputProps } = useDropzone({ onDrop,accept:'image/jpeg, image/png, image/gif, image/svg' });
-    return (
-        <>{data.totalFiles > 0 ? <AfterUpload /> : <BeforeUpload getInputProps={getInputProps} getRootProps={getRootProps} />}</>
-    );
-}
+	const onDrop = useCallback(Uploadedfiles => {
+		if (Uploadedfiles.length > 0 && Uploadedfiles.length < 11) {
+			dispatch({ type: 'add-file', payload: Uploadedfiles });
+		}
+	}, [dispatch]);
+	const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: 'image/jpeg, image/png, image/gif, image/svg' });
+	return (
+		<>{data.totalFiles > 0 ? <AfterUpload /> : <BeforeUpload getInputProps={getInputProps} getRootProps={getRootProps} />}</>
+	);
+};

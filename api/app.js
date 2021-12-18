@@ -5,7 +5,7 @@ const app = express();
 const cors = require('cors');
 
 // Enabling CORs
-app.use(cors({origin: 'https://compressio.app' }));
+app.use(cors({ origin: 'https://compressio.app' }));
 
 // Routing POST Requests on /compress to reqHandCompress
 app.post('/compress', routes.compress);
