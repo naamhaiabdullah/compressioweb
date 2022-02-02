@@ -5,7 +5,6 @@ const validator = require('validator');
 const fs = require('fs');
 const uuid = require('uuid');
 const path = require('path');
-const __dirname = path.resolve();
 
 let inParentFolder = path.join(__dirname, '../../input/');
 let outParentFolder = path.join(__dirname, '../../output/');
