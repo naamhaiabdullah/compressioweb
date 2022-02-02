@@ -177,7 +177,7 @@ sudo mkdir -p /var/www/compressio.app/api
 sudo mkdir -p /var/www/compressio.app/client
 
 sudo chown -R www-data:www-data /var/www/compressio.app
-sudo chmod -R 755 /var/www/compressio.app/app
+sudo chmod -R 755 /var/www/compressio.app
 ```
 
 #### Creating 404 Page
