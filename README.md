@@ -255,6 +255,7 @@ And delete everything else inside /var/www/compressio.app/client/
 #### Run Api Server
 ```
 cd /var/www/compressio.app/api
+npm install -g pm2
 pm2 start app.js -n CompressioAPI
 ```
 
