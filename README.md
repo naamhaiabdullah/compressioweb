@@ -247,9 +247,9 @@ npm install
 cd /var/www/compressio.app/client
 npm install
 npm run build 
-
-Move all files inside /var/www/compressio.app/client/build/ to /var/www/compressio.app/client/   
-And delete everything else inside /var/www/compressio.app/client/
+  
+Delete everything else inside /var/www/compressio.app/client/ except 404.html and build folder
+Move all files inside /var/www/compressio.app/client/build/ to /var/www/compressio.app/client/ 
 ```
 
 #### Run Api Server
