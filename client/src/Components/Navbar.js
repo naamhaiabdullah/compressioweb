@@ -17,7 +17,10 @@ export const Navbar = () => {
 						<li className='contact'>Contact</li>
 					</a>
 					<a href='https://github.com/twoabd/CompressioAPI'>
-						<li> <i style={{ color: '#1f2937' }} className='fab fa-github'></i></li>
+						<li>
+							{' '}
+							<i style={{ color: '#1f2937' }} className='fab fa-github'></i>
+						</li>
 					</a>
 				</div>
 			</ul>

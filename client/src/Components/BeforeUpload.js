@@ -1,8 +1,7 @@
 /* eslint-disable react/prop-types */
-import React, { } from 'react';
+import React from 'react';
 import Logo from '../assets/images/logo.png';
 import '../assets/css/uploadfiles.css';
-
 
 export const BeforeUpload = ({ getInputProps, getRootProps }) => {
 	return (
