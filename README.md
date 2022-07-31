@@ -257,6 +257,8 @@ Move all files inside /var/www/compressio.app/client/build/ to /var/www/compress
 cd /var/www/compressio.app/api
 npm install -g pm2
 pm2 start app.js -n CompressioAPI
+pm2 startup
+pm2 save
 ```
 
 ## Acknowledgments
