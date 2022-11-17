@@ -10,11 +10,6 @@
 7. Installation docs for DigitalOcean Ubuntu 20.04 is given below.
 ```
 
-## Website
-
-[Compressio.app](https://compressio.app)
-
-
 ## Built With
 
 * [Node.js](https://nodejs.org) - Backend
